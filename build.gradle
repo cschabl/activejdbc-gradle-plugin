@@ -1,0 +1,100 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+  id 'groovy'
+  id 'maven-publish'
+  id 'java-gradle-plugin'
+  id 'com.gradle.plugin-publish' version '0.10.0'
+  id "net.researchgate.release" version "2.7.0"
+}
+
+group = 'de.schablinski.gradle.activejdbc'
+description = """Gradle plugin for instrumenting ActiveJDBC model classes."""
+
+repositories {
+
+  mavenCentral()
+  
+}
+
+ext {
+  
+}
+
+dependencies {
+  compile localGroovy()
+
+  compile group: 'org.javalite', name: 'activejdbc', version: '2.2'
+  compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: '2.2'
+
+  // Debugging your plugin code with Gradle TestKit: set system property org.gradle.testkit.debug to true in the unit test's run configuration of your IDE
+  testCompile gradleTestKit()
+
+  testImplementation "junit:junit:4.12"
+  testImplementation ("org.spockframework:spock-core:1.2-groovy-2.4") {
+    exclude group: "org.codehaus.groovy", module: "groovy-all"
+  }
+  testCompile "org.apache.logging.log4j:log4j-api:2.11.1", "org.apache.logging.log4j:log4j-core:2.11.1"
+}
+
+processTestResources {
+  filter ReplaceTokens, tokens: ["gradle-test-kit-dir" : new File(project.buildDir, "tmp").absolutePath.replace('\\', '/')]
+}
+
+task docJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'javadoc'
+    from 'build/docs/groovydoc'
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+
+task createPluginClasspath {
+  def outputDir = file("${buildDir}/resources/test")
+
+  inputs.files sourceSets.test.runtimeClasspath
+  outputs.dir outputDir
+
+  doLast {
+    outputDir.mkdirs()
+    file("${outputDir}/plugin-classpath.txt").text = sourceSets.test.runtimeClasspath.join('\n',)
+  }
+}
+
+test.dependsOn << 'createPluginClasspath'
+
+jar {
+  manifest {
+    attributes("Name": project.group + '.' + rootProject.name,
+            "Implementation-Title": project.description,
+            "Build-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            "Implementation-Version":  project.version)
+  }
+}
+
+gradlePlugin {
+  plugins {
+    activeJdbcPlugin {
+      id = 'de.schablinski.activejdbc-gradle-plugin'
+      implementationClass = 'de.schablinski.gradle.activejdbc.ActiveJDBCGradlePlugin'
+    }
+  }
+}
+
+assemble.dependsOn += [ 'sourceJar', 'docJar']
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+      
+      artifact jar
+      artifact sourceJar
+      artifact docJar
+    }
+  }
+}
+
