@@ -79,9 +79,17 @@ gradlePlugin {
   plugins {
     activeJdbcPlugin {
       id = 'de.schablinski.activejdbc-gradle-plugin'
+      displayName = 'ActiveJDBC instrumentation plugin'
+      description = 'A plugin to instrument your project\'s model classes for the ActiveJDBC ORM framework.'
       implementationClass = 'de.schablinski.gradle.activejdbc.ActiveJDBCGradlePlugin'
     }
   }
+}
+
+pluginBundle {
+  website = 'https://github.com/cschabl/activejdbc-gradle-plugin'
+  vcsUrl = 'https://github.com/cschabl/activejdbc-gradle-plugin.git'
+  tags = ['activejdbc']
 }
 
 assemble.dependsOn += [ 'sourceJar', 'docJar']
