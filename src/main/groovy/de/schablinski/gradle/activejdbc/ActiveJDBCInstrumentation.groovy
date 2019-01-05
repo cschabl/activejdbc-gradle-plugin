@@ -33,15 +33,16 @@ class ActiveJDBCInstrumentation extends DefaultTask {
 
     ActiveJDBCInstrumentation() {
         description = "Instrument compiled class files extending from 'org.javalite.activejdbc.Model'"
-
-        classesDir = getGradleMajorVersion(project) > 3 ? project.sourceSets.main.java.outputDir.getPath()
-                : project.sourceSets.main.output.classesDir.getPath()
-        outputDir = classesDir
     }
 
     @TaskAction
     def instrument() {
         logger.info "ActiveJDBCInstrumentation.instrument"
+        if (!classesDir) {
+            classesDir = getGradleMajorVersion(project) > 3 ? project.sourceSets.main.java.outputDir.getPath()
+                    : project.sourceSets.main.output.classesDir.getPath()
+        }
+
         Instrumentation instrumentation = new Instrumentation()
         instrumentation.outputDirectory = outputDir ?: classesDir
 
@@ -62,7 +63,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
             case URL: what = new File(what.toURI()); break
             case String: what = new File(what); break
             case GString: what = new File(what.toString()); break
-            case File: break; // ok
+            case File: break // ok
             default:
                 println "Don't know how to deal with $what as it is not an URL nor a File"
                 System.exit(1)

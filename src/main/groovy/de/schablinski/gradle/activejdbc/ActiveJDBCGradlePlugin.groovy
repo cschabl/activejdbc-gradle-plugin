@@ -17,6 +17,7 @@ package de.schablinski.gradle.activejdbc
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPlugin
 
 /**
  * Gradle plugin the registers an {@link ActiveJDBCInstrumentation} task to run as part of the classes step.
@@ -25,6 +26,10 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+        if (!project.getPluginManager().hasPlugin("java")) {
+            project.logger.warn "ActiveJDBCGradlePlugin.apply: java plugin not present"
+        }
+
         def instrumentModels = project.tasks.create('instrumentModels', ActiveJDBCInstrumentation)
         instrumentModels.group = "build"
 
