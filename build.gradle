@@ -2,7 +2,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
   id 'groovy'
-  id 'maven-publish'
   id 'java-gradle-plugin'
   id 'com.gradle.plugin-publish' version '0.10.0'
   id "net.researchgate.release" version "2.7.0"
@@ -94,15 +93,4 @@ pluginBundle {
 
 assemble.dependsOn += [ 'sourceJar', 'docJar']
 
-publishing {
-  publications {
-    mavenJava(MavenPublication) {
-      from components.java
-      
-      artifact jar
-      artifact sourceJar
-      artifact docJar
-    }
-  }
-}
 
