@@ -20,6 +20,6 @@ plugins {
 
 This will create a task `instrumentModels` in the task group `build` which is added as `doLast` action to the `compileJava` task.
 
-##Attribution
+## Attribution
 
 This project started as a hard fork of the gradle-plugin module of [ActiveJDBC](http://javalite.io/activejdbc) to make it available on Gradle's plugin portal.
