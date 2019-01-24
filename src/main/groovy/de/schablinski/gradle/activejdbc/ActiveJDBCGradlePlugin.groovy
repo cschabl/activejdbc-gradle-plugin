@@ -27,7 +27,7 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (!project.getPluginManager().hasPlugin("java")) {
-            project.logger.warn "ActiveJDBCGradlePlugin.apply: java plugin not present"
+            project.logger.debug "ActiveJDBCGradlePlugin.apply: java plugin has not been applied"
         }
 
         def instrumentModels = project.tasks.create('instrumentModels', ActiveJDBCInstrumentation)
