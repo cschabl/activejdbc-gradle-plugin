@@ -1,6 +1,6 @@
 # ActiveJDBC Gradle plugin
 
-<div align="center">
+<div align="left">
 
 [![Build Status](https://travis-ci.com/cschabl/activejdbc-gradle-plugin.svg?branch=master)](https://travis-ci.com/cschabl/activejdbc-gradle-plugin)
 
