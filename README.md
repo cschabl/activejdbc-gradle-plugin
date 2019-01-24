@@ -10,10 +10,11 @@ Gradle plugin for instrumenting your project's model classes for the [ActiveJDBC
 
 ## Usage
 
-Add the plugin to the build.gradle file as follows:
+Add the plugin in addition to Java plugin to the build.gradle file as follows:
 
 ```
 plugins {
+    id 'java'
     id 'de.schablinski.activejdbc-gradle-plugin' version '1.0-beta.3'
 }
 ```
