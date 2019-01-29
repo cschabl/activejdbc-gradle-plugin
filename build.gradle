@@ -23,8 +23,8 @@ ext {
 dependencies {
   compile localGroovy()
 
-  compile group: 'org.javalite', name: 'activejdbc', version: '2.2'
   compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: '2.2'
+  runtime group: 'org.javalite', name: 'activejdbc', version: '2.2'
 
   // Debugging your plugin code with Gradle TestKit: set system property org.gradle.testkit.debug to true in the unit test's run configuration of your IDE
   testCompile gradleTestKit()
