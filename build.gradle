@@ -10,6 +10,8 @@ plugins {
 group = 'de.schablinski.gradle.activejdbc'
 description = """Gradle plugin for instrumenting ActiveJDBC model classes."""
 
+def activeJdbcVersion = '2.2'
+
 repositories {
 
   mavenCentral()
@@ -23,8 +25,8 @@ ext {
 dependencies {
   compile localGroovy()
 
-  compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: '2.2'
-  runtime group: 'org.javalite', name: 'activejdbc', version: '2.2'
+  compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: "${activeJdbcVersion}"
+  runtime group: 'org.javalite', name: 'activejdbc', version: "${activeJdbcVersion}"
 
   // Debugging your plugin code with Gradle TestKit: set system property org.gradle.testkit.debug to true in the unit test's run configuration of your IDE
   testCompile gradleTestKit()
@@ -35,6 +37,13 @@ dependencies {
   }
   testCompile "org.apache.logging.log4j:log4j-api:2.11.1", "org.apache.logging.log4j:log4j-core:2.11.1"
 }
+
+task processVersionFile(type: WriteProperties) {
+  outputFile file("$buildDir/resources/main/activejdbc-gradle-plugin.properties")
+
+  property 'activejdbc-version', activeJdbcVersion
+}
+tasks.classes.dependsOn processVersionFile
 
 processTestResources {
   filter ReplaceTokens, tokens: ["gradle-test-kit-dir" : new File(project.buildDir, "tmp").absolutePath.replace('\\', '/')]

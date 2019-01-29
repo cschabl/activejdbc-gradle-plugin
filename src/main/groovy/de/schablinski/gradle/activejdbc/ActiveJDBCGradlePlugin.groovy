@@ -24,21 +24,42 @@ import org.gradle.api.plugins.JavaPlugin
  */
 class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
+    static final String EXTENSION_NAME = 'activejdbc'
+
     @Override
     void apply(Project project) {
+        ActiveJDBCExtension activeJdbcExtension = project.extensions.create(EXTENSION_NAME, ActiveJDBCExtension)
+        activeJdbcExtension.toolVersion = loadToolVersion()
+
         if (!project.getPluginManager().hasPlugin("java")) {
             project.logger.debug "ActiveJDBCGradlePlugin.apply: java plugin has not been applied"
         }
 
-        def instrumentModels = project.tasks.create('instrumentModels', ActiveJDBCInstrumentation)
-        instrumentModels.group = "build"
-
         project.plugins.withType(JavaPlugin) {
             // use it as doLast action, because Gradle takes hashes of class files for incremental build afterwards
             project.tasks.compileJava.doLast {
+                project.logger.info "ActiveJDBCGradlePlugin.doLast: tool version=" + activeJdbcExtension.toolVersion
+
+                def instrumentModels = project.tasks.create('instrumentModels', ActiveJDBCInstrumentation)
+                instrumentModels.group = "build"
+
                 instrumentModels.instrument()
             }
         }
     }
 
+    private String loadToolVersion() {
+        URL url = ActiveJDBCGradlePlugin.class.getClassLoader().getResource("activejdbc-gradle-plugin.properties");
+        InputStream input
+
+        try {
+            input = url.openStream()
+            Properties prop = new Properties();
+            prop.load(input);
+            return prop.getProperty("activejdbc-version");
+        }
+        finally {
+            input?.close()
+        }
+    }
 }

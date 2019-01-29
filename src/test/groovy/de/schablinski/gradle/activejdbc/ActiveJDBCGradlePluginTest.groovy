@@ -30,6 +30,25 @@ repositories {
 }
         '''
 
+    private static final String BUILD_FILE_ACTIVE_JDBC =
+            '''
+
+plugins {
+    id 'java'
+    id 'de.schablinski.activejdbc-gradle-plugin'
+}   
+
+activejdbc.toolVersion = 2.0
+
+dependencies {
+    compile 'org.javalite:activejdbc:2.2'
+}
+
+repositories {
+    mavenCentral()
+}
+        '''
+
     static
     {
         InputStream testPropsStream = ActiveJDBCGradlePluginTest.class.getResourceAsStream("/" + TEST_PROPS_FILE)
@@ -83,6 +102,20 @@ repositories {
 
         then:
         result.task(":classes").outcome == TaskOutcome.UP_TO_DATE
+    }
+
+    def "should load specified tool version" () {
+        given:
+        buildFile << BUILD_FILE_ACTIVE_JDBC
+
+        AntBuilder ant = new AntBuilder()
+        ant.copy(file : 'src/test/resources/Address.java', toDir: javaDir)
+
+        when:
+        BuildResult result = createGradleRunner('classes').build()
+
+        then:
+        result.task(":classes").outcome == TaskOutcome.SUCCESS
     }
 
     protected GradleRunner createGradleRunner(String taskName) {
