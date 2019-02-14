@@ -17,6 +17,8 @@ package de.schablinski.gradle.activejdbc
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
 
 /**
@@ -35,14 +37,24 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
             project.logger.debug "ActiveJDBCGradlePlugin.apply: java plugin has not been applied"
         }
 
+        Configuration activeJdbcConfig = project.configurations.create("activejdbc")
+        activeJdbcConfig.setVisible(false);
+        activeJdbcConfig.setDescription("The ActiveJDBC libraries to be used for this project.");
+        activeJdbcConfig.defaultDependencies { dependencies ->
+            dependencies.add(project.dependencies.create("org.javalite:activejdbc-instrumentation:"
+                    + activeJdbcExtension.toolVersion))
+            dependencies.add(project.dependencies.create("org.javalite:activejdbc:"
+                    + activeJdbcExtension.toolVersion))
+        }
+
+        Task instrumentModels = project.tasks.create('instrumentModels', ActiveJDBCInstrumentation)
+        instrumentModels.activeJdbcClasspath = activeJdbcConfig
+        instrumentModels.group = "build"
+
         project.plugins.withType(JavaPlugin) {
             // use it as doLast action, because Gradle takes hashes of class files for incremental build afterwards
             project.tasks.compileJava.doLast {
-                project.logger.info "ActiveJDBCGradlePlugin.doLast: tool version=" + activeJdbcExtension.toolVersion
-
-                def instrumentModels = project.tasks.create('instrumentModels', ActiveJDBCInstrumentation)
-                instrumentModels.group = "build"
-
+                project.logger.info "ActiveJDBCGradlePlugin: tool version=" + activeJdbcExtension.toolVersion
                 instrumentModels.instrument()
             }
         }
@@ -62,4 +74,5 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
             input?.close()
         }
     }
+
 }

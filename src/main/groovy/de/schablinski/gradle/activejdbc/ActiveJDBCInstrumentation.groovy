@@ -17,8 +17,11 @@ package de.schablinski.gradle.activejdbc
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.TaskAction
-import org.javalite.instrumentation.Instrumentation
+import org.gradle.process.JavaExecSpec
+import org.javalite.instrumentation.Main
 
 /**
  * Gradle task for performing ActiveJDBC instrumentation on a set of compiled {@code .class} files.
@@ -31,6 +34,26 @@ class ActiveJDBCInstrumentation extends DefaultTask {
     /** The output directory to write back classes after instrumentation. */
     String outputDir
 
+    private FileCollection activeJdbcClasspath;
+
+    /**
+     * Class path holding the ActiveJDBC library.
+     *
+     * @return class path holding the ActiveJDBC library
+     */
+    @Classpath
+    FileCollection getActiveJdbcClasspath() {
+        return activeJdbcClasspath;
+    }
+
+    /**
+     * @param activeJdbcClasspath
+     *            class path holding the ActiveJdbc library
+     */
+    void setActiveJdbcClasspath(FileCollection activeJdbcClasspath) {
+        this.activeJdbcClasspath = activeJdbcClasspath;
+    }
+
     ActiveJDBCInstrumentation() {
         description = "Instrument compiled class files extending from 'org.javalite.activejdbc.Model'"
     }
@@ -38,44 +61,35 @@ class ActiveJDBCInstrumentation extends DefaultTask {
     @TaskAction
     def instrument() {
         logger.info "ActiveJDBCInstrumentation.instrument"
+
+        FileCollection instrumentationClasspath = activeJdbcClasspath
+
         if (!classesDir) {
-            classesDir = getGradleMajorVersion(project) > 3 ? project.sourceSets.main.java.outputDir.getPath()
-                    : project.sourceSets.main.output.classesDir.getPath()
+            File javaMainOutputDir = getJavaMainOutputDir()
+            classesDir = javaMainOutputDir.getPath()
+            instrumentationClasspath += project.files(javaMainOutputDir)
+        }
+        else {
+            instrumentationClasspath += project.files(classesDir)
         }
 
-        Instrumentation instrumentation = new Instrumentation()
-        instrumentation.outputDirectory = outputDir ?: classesDir
-
-        def rootLoader = this.class.classLoader.rootLoader
-        addUrlIfNotPresent rootLoader, classesDir
-        addUrlIfNotPresent Instrumentation.class.classLoader, classesDir
-
-        instrumentation.instrument()
+        runInstrumentation(instrumentationClasspath, outputDir ?: classesDir)
     }
 
-    // from the Griffon ActiveJDBC plugin
-    private def addUrlIfNotPresent(to, what) {
-        if (!to || !what) {
-            return
-        }
-        def urls = to.URLs.toList()
-        switch (what.class) {
-            case URL: what = new File(what.toURI()); break
-            case String: what = new File(what); break
-            case GString: what = new File(what.toString()); break
-            case File: break // ok
-            default:
-                println "Don't know how to deal with $what as it is not an URL nor a File"
-                System.exit(1)
-        }
+    private void runInstrumentation(FileCollection instrumentationClasspath, String outputDirpath) {
+        project.javaexec { JavaExecSpec jes ->
+            logger.info "Running ActiveJDBC instrumentation instance with environment: ${jes.environment}"
 
-        if (what.directory && !what.exists()) {
-            what.mkdirs()
+            jes.classpath = instrumentationClasspath
+            jes.main = Main.canonicalName
+            jes.systemProperties = ['outputDirectory': outputDirpath]
         }
-        def url = what.toURI().toURL()
-        if (!urls.contains(url) && (what.directory || !urls.find { it.path.endsWith(what.name) })) {
-            to.addURL(url)
-        }
+    }
+
+    private File getJavaMainOutputDir()
+    {
+        return getGradleMajorVersion(project) > 3 ? project.sourceSets.main.java.outputDir
+                : project.sourceSets.main.output.classesDir
     }
 
     private static int getGradleMajorVersion(Project project)

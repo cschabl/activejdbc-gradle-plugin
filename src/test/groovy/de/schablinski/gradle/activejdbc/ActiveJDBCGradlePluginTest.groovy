@@ -30,7 +30,7 @@ repositories {
 }
         '''
 
-    private static final String BUILD_FILE_ACTIVE_JDBC =
+    private static final String BUILD_FILE_ACTIVE_JDBC_2_0 =
             '''
 
 plugins {
@@ -41,7 +41,7 @@ plugins {
 activejdbc.toolVersion = 2.0
 
 dependencies {
-    compile 'org.javalite:activejdbc:2.2'
+    compile 'org.javalite:activejdbc:2.0'
 }
 
 repositories {
@@ -106,7 +106,7 @@ repositories {
 
     def "should load specified tool version" () {
         given:
-        buildFile << BUILD_FILE_ACTIVE_JDBC
+        buildFile << BUILD_FILE_ACTIVE_JDBC_2_0
 
         AntBuilder ant = new AntBuilder()
         ant.copy(file : 'src/test/resources/Address.java', toDir: javaDir)
@@ -124,5 +124,6 @@ repositories {
                 .withPluginClasspath(pluginClasspath)
                 .withArguments(taskName, '--info', '--stacktrace')
                 .forwardOutput()
+        .withDebug(true)
     }
 }
