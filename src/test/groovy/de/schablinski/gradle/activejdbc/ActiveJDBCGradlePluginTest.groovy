@@ -1,6 +1,6 @@
 package de.schablinski.gradle.activejdbc
 
-import org.apache.logging.log4j.LogManager
+import groovy.util.logging.Log4j2
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -8,10 +8,11 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
+@Log4j2
 class ActiveJDBCGradlePluginTest extends Specification {
 
-    protected static final String TEST_PROPS_FILE = "test.properties"
-    protected static final Properties TEST_PROPS = new Properties()
+    private static final String TEST_PROPS_FILE = "test.properties"
+    private static final Properties TEST_PROPS = new Properties()
 
     private static final String BUILD_FILE_TEMPLATE =
             '''
@@ -70,7 +71,7 @@ repositories {
         javaDir.mkdirs()
 
         buildFile = testProjectDir.newFile('build.gradle')
-        LogManager.getLogger(getClass()).debug("buildFile=$buildFile")
+        log.debug "buildFile=$buildFile"
 
         pluginClasspath = getClass().classLoader.findResource('plugin-classpath.txt').readLines().collect { new File(it) }
     }
@@ -87,6 +88,9 @@ repositories {
 
         then:
         result.task(":classes").outcome == TaskOutcome.SUCCESS
+        result.getOutput() =~ /Instrumented class.*Address\.class/
+
+        log.debug "Gradle output: " + result.getOutput()
     }
 
     def "should not compile again after instrumentation"() {
@@ -102,6 +106,9 @@ repositories {
 
         then:
         result.task(":classes").outcome == TaskOutcome.UP_TO_DATE
+        result.getOutput() =~ /Skipping task ':compileJava'/
+
+        log.debug "Gradle output: " + result.getOutput()
     }
 
     def "should load specified tool version" () {
@@ -116,6 +123,10 @@ repositories {
 
         then:
         result.task(":classes").outcome == TaskOutcome.SUCCESS
+        result.getOutput() =~ /Starting process.*activejdbc-instrumentation-2.0.jar.*/
+        !(result.getOutput() =~ /Starting process.*activejdbc-instrumentation-2.2.jar.*/)
+
+        log.debug "Gradle output: " + result.getOutput()
     }
 
     protected GradleRunner createGradleRunner(String taskName) {
@@ -123,7 +134,6 @@ repositories {
                 .withProjectDir(testProjectDir.root)
                 .withPluginClasspath(pluginClasspath)
                 .withArguments(taskName, '--info', '--stacktrace')
-                .forwardOutput()
-        .withDebug(true)
+        // .withDebug(true)
     }
 }
