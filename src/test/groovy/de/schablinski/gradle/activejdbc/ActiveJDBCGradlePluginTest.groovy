@@ -2,17 +2,10 @@ package de.schablinski.gradle.activejdbc
 
 import groovy.util.logging.Log4j2
 import org.gradle.testkit.runner.BuildResult
-import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
 @Log4j2
-class ActiveJDBCGradlePluginTest extends Specification {
-
-    private static final String TEST_PROPS_FILE = "test.properties"
-    private static final Properties TEST_PROPS = new Properties()
+class ActiveJDBCGradlePluginTest extends AbstractActiveJDBCGradlePluginTest {
 
     private static final String BUILD_FILE_TEMPLATE =
             '''
@@ -50,30 +43,12 @@ repositories {
 }
         '''
 
-    static
-    {
-        InputStream testPropsStream = ActiveJDBCGradlePluginTest.class.getResourceAsStream("/" + TEST_PROPS_FILE)
-        TEST_PROPS.load(testPropsStream)
-        testPropsStream.close()
-    }
-
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder(new File(TEST_PROPS.getProperty("gradleTestKit.dir")))
-
-    File buildFile
     File javaDir
-
-    List pluginClasspath
 
     def setup() {
         File srcDir = testProjectDir.newFolder('src')
         javaDir = new File(new File(srcDir, 'main'), 'java')
         javaDir.mkdirs()
-
-        buildFile = testProjectDir.newFile('build.gradle')
-        log.debug "buildFile=$buildFile"
-
-        pluginClasspath = getClass().classLoader.findResource('plugin-classpath.txt').readLines().collect { new File(it) }
     }
 
     def "should instrument model classes"() {
@@ -127,13 +102,5 @@ repositories {
         !(result.getOutput() =~ /Starting process.*activejdbc-instrumentation-2.2.jar.*/)
 
         log.debug "Gradle output: " + result.getOutput()
-    }
-
-    protected GradleRunner createGradleRunner(String taskName) {
-        return GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withPluginClasspath(pluginClasspath)
-                .withArguments(taskName, '--info', '--stacktrace')
-        // .withDebug(true)
     }
 }

@@ -37,10 +37,10 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
             project.logger.debug "ActiveJDBCGradlePlugin.apply: java plugin has not been applied"
         }
 
-        Configuration activeJdbcConfig = project.configurations.create("activejdbc")
+        Configuration activeJdbcConfig = project.configurations.maybeCreate("activejdbc")
         activeJdbcConfig.setVisible(false);
         activeJdbcConfig.setDescription("The ActiveJDBC libraries to be used for this project.");
-        activeJdbcConfig.defaultDependencies { dependencies ->
+        activeJdbcConfig.withDependencies { dependencies ->
             dependencies.add(project.dependencies.create("org.javalite:activejdbc-instrumentation:"
                     + activeJdbcExtension.toolVersion))
             dependencies.add(project.dependencies.create("org.javalite:activejdbc:"
