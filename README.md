@@ -35,6 +35,9 @@ The default version is 2.2.
 
 ### Scala
 
+Currently, there is only rudimentary support to instrument ActiveJDBC models written in Scala. 
+Rudimentary in the sense that only pure Scala projects are supported, i.e. only Scala sources and no Java sources.
+
 To instrument ActiveJDBC model classes written in Scala, configure the plugin as shown in the build script below:
 
 ```
