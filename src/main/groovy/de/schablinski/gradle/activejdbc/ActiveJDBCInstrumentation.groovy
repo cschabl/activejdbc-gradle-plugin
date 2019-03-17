@@ -34,7 +34,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
     /** The output directory to write back classes after instrumentation. */
     String outputDir
 
-    private FileCollection activeJdbcClasspath;
+    private FileCollection activeJdbcClasspath
 
     /**
      * Class path holding the ActiveJDBC library.
@@ -43,7 +43,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
      */
     @Classpath
     FileCollection getActiveJdbcClasspath() {
-        return activeJdbcClasspath;
+        return activeJdbcClasspath
     }
 
     /**
@@ -51,7 +51,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
      *            class path holding the ActiveJdbc library
      */
     void setActiveJdbcClasspath(FileCollection activeJdbcClasspath) {
-        this.activeJdbcClasspath = activeJdbcClasspath;
+        this.activeJdbcClasspath = activeJdbcClasspath
     }
 
     ActiveJDBCInstrumentation() {
@@ -65,7 +65,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
         FileCollection instrumentationClasspath = activeJdbcClasspath
 
         if (!classesDir) {
-            File javaMainOutputDir = getJavaMainOutputDir()
+            File javaMainOutputDir = GradleUtils.getJavaMainOutputDir(project)
             classesDir = javaMainOutputDir.getPath()
             instrumentationClasspath += project.files(javaMainOutputDir)
         }
@@ -84,17 +84,5 @@ class ActiveJDBCInstrumentation extends DefaultTask {
             jes.main = Main.canonicalName
             jes.systemProperties = ['outputDirectory': outputDirpath]
         }
-    }
-
-    private File getJavaMainOutputDir()
-    {
-        return getGradleMajorVersion(project) > 3 ? project.sourceSets.main.java.outputDir
-                : project.sourceSets.main.output.classesDir
-    }
-
-    private static int getGradleMajorVersion(Project project)
-    {
-        String gradleVersion = project.getGradle().getGradleVersion()
-        Integer.valueOf(gradleVersion.substring(0, gradleVersion.indexOf(".")))
     }
 }

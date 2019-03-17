@@ -15,16 +15,6 @@ plugins {
     id 'de.schablinski.activejdbc-gradle-plugin'
 }   
 
-instrumentModels {
-    // assuming Gradle 4.0 or higher
-    classesDir = project.sourceSets.main.scala.outputDir.getPath()
-    outputDir = classesDir
-}
-
-compileScala.doLast {
-    instrumentModels.instrument()
-}
-
 dependencies {
     compile 'org.scala-lang:scala-library:2.12.6'
     compile 'org.javalite:activejdbc:2.2'
@@ -37,11 +27,14 @@ repositories {
         '''
 
     File scalaDir
+    File javaDir
 
     def setup() {
         File srcDir = testProjectDir.newFolder('src')
         scalaDir = new File(new File(srcDir, 'main'), 'scala')
         scalaDir.mkdirs()
+        javaDir = new File(new File(srcDir, 'main'), 'java')
+        javaDir.mkdirs()
     }
 
     def "should instrument scala model classes"() {
@@ -56,6 +49,25 @@ repositories {
 
         then:
         result.task(":classes").outcome == TaskOutcome.SUCCESS
+        result.getOutput() =~ /Instrumented class.*Person\.class/
+
+        log.info "Gradle output: " + result.getOutput()
+    }
+
+    def "should instrument java and scala model classes"() {
+        given:
+        buildFile << BUILD_FILE_TEMPLATE
+
+        AntBuilder ant = new AntBuilder()
+        ant.copy(file : 'src/test/resources/Address.java', toDir: javaDir)
+        ant.copy(file : 'src/test/resources/Person.scala', toDir: scalaDir)
+
+        when:
+        BuildResult result = createGradleRunner('classes').build()
+
+        then:
+        result.task(":classes").outcome == TaskOutcome.SUCCESS
+        result.getOutput() =~ /Instrumented class.*Address\.class/
         result.getOutput() =~ /Instrumented class.*Person\.class/
 
         log.info "Gradle output: " + result.getOutput()

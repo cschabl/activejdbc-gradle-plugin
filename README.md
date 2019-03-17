@@ -19,7 +19,7 @@ plugins {
 }
 ```
 
-This will create a task `instrumentModels` in the task group `build` which is added as `doLast` action to the `compileJava` task.
+This will create a task `instrumentJavaModels` in the task group `build` which is added as `doLast` action to the `compileJava` task.
 
 ### Configuration
 
@@ -35,26 +35,13 @@ The default version is 2.2.
 
 ### Scala
 
-Currently, there is only rudimentary support to instrument ActiveJDBC models written in Scala. 
-Rudimentary in the sense that only pure Scala projects are supported, i.e. only Scala sources and no Java sources.
-
-To instrument ActiveJDBC model classes written in Scala, configure the plugin as shown in the build script below:
+To instrument ActiveJDBC model classes written in Scala, configure the plugin as shown in the build script below (Gradle >= 4.0):
 
 ```
 plugins {
     id 'scala'
     id 'de.schablinski.activejdbc-gradle-plugin'
 }   
-
-instrumentModels {
-    // assuming Gradle 4.0 or higher
-    classesDir = project.sourceSets.main.scala.outputDir.getPath()
-    outputDir = classesDir
-}
-
-compileScala.doLast {
-    instrumentModels.instrument()
-}
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.12.6'
@@ -68,9 +55,7 @@ repositories {
 }
 ```
 
-1. The task _instrumentModels_ is configured to search the Scala plugin's output directory for model classes
-1. This task is added is added as _doLast_ action of the Scala plugin 
-1. Finally the Scala library is put on the classpath of ActiveJDBC instrumentation tool (s. configuration _activejdbc_), because the model classes have a dependency on the Scala library.
+The Scala library must be added on the classpath of ActiveJDBC instrumentation tool (s. configuration _activejdbc_), because the model classes have a dependency on the Scala library.
 
 ## Attribution
 
