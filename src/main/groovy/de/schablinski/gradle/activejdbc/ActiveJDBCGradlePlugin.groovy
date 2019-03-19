@@ -49,7 +49,7 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
         }
 
         project.plugins.withType(JavaPlugin) {
-            Task instrumentModels = project.tasks.create('instrumentJavaModels', ActiveJDBCInstrumentation)
+            Task instrumentModels = project.tasks.create('instrumentModels', ActiveJDBCInstrumentation)
             instrumentModels.activeJdbcClasspath = activeJdbcConfig
             instrumentModels.classesDir = GradleUtils.getJavaMainOutputDir(project)
             instrumentModels.group = "build"
