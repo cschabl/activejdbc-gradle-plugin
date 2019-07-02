@@ -16,7 +16,7 @@ plugins {
 }   
 
 dependencies {
-    compile 'org.javalite:activejdbc:2.2'
+    compile 'org.javalite:activejdbc:2.3'
 }
 
 repositories {
