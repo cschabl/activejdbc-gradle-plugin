@@ -15,7 +15,7 @@ Add the plugin in addition to Java plugin to the build.gradle file as follows:
 ```
 plugins {
     id 'java'
-    id 'de.schablinski.activejdbc-gradle-plugin' version '1.0'
+    id 'de.schablinski.activejdbc-gradle-plugin' version '1.2'
 }
 ```
 
@@ -29,7 +29,7 @@ The version of the ActiveJDBC instrumentation tool can be configured as follows:
 activejdbc.toolVersion = 2.2
 ```
 
-The default version is 2.2.
+The default version is 2.3.
 
 ## Other JVM languages
 
