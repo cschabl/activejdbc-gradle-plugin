@@ -10,7 +10,7 @@ plugins {
 group = 'de.schablinski.gradle.activejdbc'
 description = """Gradle plugin for instrumenting ActiveJDBC model classes."""
 
-def activeJdbcVersion = '2.3'
+def activeJdbcVersion = '2.2'
 
 repositories {
 
