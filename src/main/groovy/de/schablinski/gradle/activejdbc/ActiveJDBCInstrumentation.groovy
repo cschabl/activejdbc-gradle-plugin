@@ -20,7 +20,7 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.JavaExecSpec
-//import org.javalite.instrumentation.Main
+import org.javalite.instrumentation.Main
 
 /**
  * Gradle task for performing ActiveJDBC instrumentation on a set of compiled {@code .class} files.
@@ -78,13 +78,9 @@ class ActiveJDBCInstrumentation extends DefaultTask {
     private void runInstrumentation(FileCollection instrumentationClasspath, String outputDirpath) {
         project.javaexec { JavaExecSpec jes ->
             logger.info "Running ActiveJDBC instrumentation instance with environment: ${jes.environment}"
-            logger.info "Implementation classpath:"
-            instrumentationClasspath.forEach() { f ->
-                logger.info(f.getAbsolutePath())
-            }
+
             jes.classpath = instrumentationClasspath
-//            jes.main = Main.canonicalName
-            jes.main = 'org.javalite.instrumentation.Main'
+            jes.main = Main.canonicalName
             jes.systemProperties = ['outputDirectory': outputDirpath]
         }
     }
