@@ -20,7 +20,9 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.plugins.GroovyPlugin
 import org.gradle.api.plugins.scala.ScalaPlugin
+
 
 /**
  * Gradle plugin the registers an {@link ActiveJDBCInstrumentation} task to run as part of the classes step.
@@ -58,6 +60,17 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
             project.tasks.compileJava.doLast {
                 project.logger.info "ActiveJDBCGradlePlugin: tool version=" + activeJdbcExtension.toolVersion
                 instrumentModels.instrument()
+            }
+        }
+
+        project.plugins.withType(GroovyPlugin) {
+            Task instrumentGroovyModels = project.tasks.create('instrumentGroovyModels', ActiveJDBCInstrumentation)
+            instrumentGroovyModels.activeJdbcClasspath = activeJdbcConfig
+            instrumentGroovyModels.classesDir = project.sourceSets.main.groovy.outputDir.getPath()
+            instrumentGroovyModels.group = "build"
+            // use it as doLast action, because Gradle takes hashes of class files for incremental build afterwards
+            project.tasks.compileGroovy.doLast {
+                instrumentGroovyModels.instrument()
             }
         }
 
