@@ -17,8 +17,7 @@ plugins {
 
 dependencies {
     compile 'org.codehaus.groovy:groovy:2.4.15'
-    compile 'org.javalite:activejdbc:2.2'
-    activejdbc 'org.codehaus.groovy:groovy:2.4.15'
+    compile 'org.javalite:activejdbc:2.3'
 }
 
 repositories {
