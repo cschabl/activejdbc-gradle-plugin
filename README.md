@@ -45,7 +45,7 @@ plugins {
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.12.6'
-    compile 'org.javalite:activejdbc:2.2'
+    compile 'org.javalite:activejdbc:2.3'
     
     activejdbc 'org.scala-lang:scala-library:2.12.6'
 }
@@ -56,6 +56,29 @@ repositories {
 ```
 
 The Scala library must be added on the classpath of ActiveJDBC instrumentation tool (s. configuration _activejdbc_), because the model classes have a dependency on the Scala library.
+
+### Groovy
+
+To instrument ActiveJDBC model classes written in Groovy, configure the plugin as shown in the build script below (Gradle >= 4.0):
+
+```
+plugins {
+    id 'groovy'
+    id 'de.schablinski.activejdbc-gradle-plugin'
+}   
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy:2.4.15'
+    compile 'org.javalite:activejdbc:2.3'
+    
+    // The Groovy library is only required on the instrumentation classpath, if the model classes depend on the GDK
+    // activejdbc 'org.codehaus.groovy:groovy:2.4.15'
+}
+
+repositories {
+    jcenter()
+}
+```
 
 ## Attribution
 
