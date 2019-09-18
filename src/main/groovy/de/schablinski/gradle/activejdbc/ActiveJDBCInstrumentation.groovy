@@ -42,6 +42,9 @@ class ActiveJDBCInstrumentation extends DefaultTask {
      */
     @Classpath
     FileCollection getActiveJdbcClasspath() {
+        if (!activeJdbcClasspath) {
+            activeJdbcClasspath = project.configurations.getByName("activejdbc")
+        }
         return activeJdbcClasspath
     }
 
@@ -61,7 +64,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
     def instrument() {
         logger.info "ActiveJDBCInstrumentation.instrument"
 
-        FileCollection instrumentationClasspath = activeJdbcClasspath
+        FileCollection instrumentationClasspath = getActiveJdbcClasspath()
 
         if (!classesDir) {
             File javaMainOutputDir = GradleUtils.getJavaMainOutputDir(project)

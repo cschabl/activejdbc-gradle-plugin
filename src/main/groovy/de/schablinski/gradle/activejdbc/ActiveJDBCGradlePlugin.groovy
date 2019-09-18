@@ -52,7 +52,6 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
         project.plugins.withType(JavaPlugin) {
             Task instrumentModels = project.tasks.create('instrumentModels', ActiveJDBCInstrumentation)
-            instrumentModels.activeJdbcClasspath = activeJdbcConfig
             instrumentModels.classesDir = GradleUtils.getJavaMainOutputDir(project)
             instrumentModels.group = "build"
 
@@ -65,7 +64,6 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
         project.plugins.withType(GroovyPlugin) {
             Task instrumentGroovyModels = project.tasks.create('instrumentGroovyModels', ActiveJDBCInstrumentation)
-            instrumentGroovyModels.activeJdbcClasspath = activeJdbcConfig
             instrumentGroovyModels.classesDir = project.sourceSets.main.groovy.outputDir.getPath()
             instrumentGroovyModels.group = "build"
             // use it as doLast action, because Gradle takes hashes of class files for incremental build afterwards
@@ -76,7 +74,6 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
         project.plugins.withType(ScalaPlugin) {
             Task instrumentScalaModels = project.tasks.create('instrumentScalaModels', ActiveJDBCInstrumentation)
-            instrumentScalaModels.activeJdbcClasspath = activeJdbcConfig
             instrumentScalaModels.classesDir = project.sourceSets.main.scala.outputDir.getPath()
             instrumentScalaModels.group = "build"
             // use it as doLast action, because Gradle takes hashes of class files for incremental build afterwards
