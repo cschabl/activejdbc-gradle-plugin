@@ -80,6 +80,29 @@ repositories {
 }
 ```
 
-## Attribution
+### JVM languages not yet supported supported by the plugin
+
+The ActiveJDBC model instrumentation is executed by the task [ActiveJDBCInstrumentation](./src/main/groovy/de/schablinski/gradle/activejdbc/ActiveJDBCInstrumentation.groovy).
+An instance of this task is added as doLast-action to the task _compileJava_ by the ActiveJDBC Gradle plugin, e.g.
+
+This task can be used to instrument ActiveJDBC model classes written in JVM languages not yet supported by this plugin.
+First, a task of type _ActiveJDBCInstrumentation_ must be created with its property _classesDir_ set to the output directory of the language's compiler.
+Then, this task must be added as doLast-action to the language's compile-task. 
+
+Then following build script snippet demonstrates these steps for Kotlin. 
+A complete working example for Kotlin can be found at the Github project [active-jdbc-gradle-kotlin-example](https://github.com/cschabl/active-jdbc-gradle-kotlin-example).
+
+```groovy
+task instrumentKotlinModels(type: ActiveJDBCInstrumentation) {
+    group = 'build'
+    classesDir = "${project.buildDir}/classes/kotlin/main"
+}
+
+tasks['compileKotlin'].doLast {
+    instrumentKotlinModels.instrument()
+}
+```
+
+## Attribution.
 
 This project started as a hard fork of the gradle-plugin module of [ActiveJDBC](http://javalite.io/activejdbc) to make it available on Gradle's plugin portal.
