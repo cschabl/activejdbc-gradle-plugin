@@ -89,8 +89,8 @@ This task can be used to instrument ActiveJDBC model classes written in JVM lang
 First, a task of type _ActiveJDBCInstrumentation_ must be created with its property _classesDir_ set to the output directory of the language's compiler.
 Then, this task must be added as doLast-action to the language's compile-task. 
 
-Then following build script snippet demonstrates these steps for Kotlin. 
-A complete working example for Kotlin can be found at the Github project [active-jdbc-gradle-kotlin-example](https://github.com/cschabl/active-jdbc-gradle-kotlin-example).
+The following build script snippet demonstrates these steps for Kotlin. 
+A complete [build script](https://github.com/cschabl/active-jdbc-gradle-kotlin-example/blob/master/build.gradle) can be found in the Kotlin example project [active-jdbc-gradle-kotlin-example](https://github.com/cschabl/active-jdbc-gradle-kotlin-example) at Github.
 
 ```groovy
 task instrumentKotlinModels(type: ActiveJDBCInstrumentation) {
