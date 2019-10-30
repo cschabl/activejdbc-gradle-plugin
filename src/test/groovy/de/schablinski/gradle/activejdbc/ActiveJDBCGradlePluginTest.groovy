@@ -32,7 +32,7 @@ plugins {
     id 'de.schablinski.activejdbc-gradle-plugin'
 }   
 
-activejdbc.toolVersion = 2.0
+activejdbc.toolVersion = '2.0'
 
 dependencies {
     compile 'org.javalite:activejdbc:2.0'

@@ -15,7 +15,7 @@ Add the plugin in addition to Java plugin to the build.gradle file as follows:
 ```
 plugins {
     id 'java'
-    id 'de.schablinski.activejdbc-gradle-plugin' version '1.3'
+    id 'de.schablinski.activejdbc-gradle-plugin' version '1.4'
 }
 ```
 
@@ -26,7 +26,7 @@ This will create a task `instrumentJavaModels` in the task group `build` which i
 The version of the ActiveJDBC instrumentation tool can be configured as follows:
 
 ```
-activejdbc.toolVersion = 2.2
+activejdbc.toolVersion = '2.2'
 ```
 
 The default version is 2.3.
