@@ -30,6 +30,7 @@ activejdbc.toolVersion = '2.2'
 ```
 
 The default version is 2.3.
+The plugin has been tested with ActiveJDBC 2.0 to 2.3.1-j8.
 
 ## Other JVM languages
 

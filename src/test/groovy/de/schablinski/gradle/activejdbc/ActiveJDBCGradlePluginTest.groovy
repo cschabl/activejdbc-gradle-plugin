@@ -1,5 +1,6 @@
 package de.schablinski.gradle.activejdbc
 
+import groovy.text.SimpleTemplateEngine
 import groovy.util.logging.Log4j2
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
@@ -24,7 +25,8 @@ repositories {
 }
         '''
 
-    private static final String BUILD_FILE_ACTIVE_JDBC_2_0 =
+
+    private static final String BUILD_FILE_TOOL_VERSION =
             '''
 
 plugins {
@@ -32,10 +34,10 @@ plugins {
     id 'de.schablinski.activejdbc-gradle-plugin'
 }   
 
-activejdbc.toolVersion = '2.0'
+activejdbc.toolVersion = '$version'
 
 dependencies {
-    compile 'org.javalite:activejdbc:2.0'
+    compile 'org.javalite:activejdbc:$version'
 }
 
 repositories {
@@ -88,7 +90,9 @@ repositories {
 
     def "should load specified tool version" () {
         given:
-        buildFile << BUILD_FILE_ACTIVE_JDBC_2_0
+        def givenToolVersion = '2.0'
+
+        buildFile << createBuildScript(givenToolVersion)
 
         AntBuilder ant = new AntBuilder()
         ant.copy(file : 'src/test/resources/Address.java', toDir: javaDir)
@@ -98,9 +102,33 @@ repositories {
 
         then:
         result.task(":classes").outcome == TaskOutcome.SUCCESS
-        result.getOutput() =~ /Starting process.*activejdbc-instrumentation-2.0.jar.*/
+        result.getOutput() =~ /Starting process.*activejdbc-instrumentation-${givenToolVersion}.jar.*/
         !(result.getOutput() =~ /Starting process.*activejdbc-instrumentation-2.2.jar.*/)
 
         log.debug "Gradle output: " + result.getOutput()
+    }
+
+    def "should use ActiveJDBC version 2.3.1-j8" () {
+        given:
+        def givenToolVersion = '2.3.1-j8'
+
+        buildFile << createBuildScript(givenToolVersion)
+
+        AntBuilder ant = new AntBuilder()
+        ant.copy(file : 'src/test/resources/Address.java', toDir: javaDir)
+
+        when:
+        BuildResult result = createGradleRunner('classes').build()
+
+        then:
+        result.task(":classes").outcome == TaskOutcome.SUCCESS
+        result.getOutput() =~ /Starting process.*activejdbc-instrumentation-${givenToolVersion}.jar.*/
+
+        log.debug "Gradle output: " + result.getOutput()
+    }
+
+    private static def createBuildScript(def version) {
+        def templEngine = new SimpleTemplateEngine()
+        templEngine.createTemplate(BUILD_FILE_TOOL_VERSION).make([version: version ])
     }
 }
