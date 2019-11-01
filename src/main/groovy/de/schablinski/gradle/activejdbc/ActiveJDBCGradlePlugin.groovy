@@ -19,6 +19,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.GroovyPlugin
 import org.gradle.api.plugins.scala.ScalaPlugin
@@ -33,21 +34,43 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+        String defaultToolVersion = loadToolVersion()
         ActiveJDBCExtension activeJdbcExtension = project.extensions.create(EXTENSION_NAME, ActiveJDBCExtension)
-        activeJdbcExtension.toolVersion = loadToolVersion()
 
         if (!project.getPluginManager().hasPlugin("java")) {
             project.logger.debug "ActiveJDBCGradlePlugin.apply: java plugin has not been applied"
         }
 
+        String compileActiveJdbcVersion
+        def getActiveJdbcVersion = { dependencies ->
+            Dependency activeJdbcDep = dependencies.find { d -> d.group == "org.javalite" && d.name == "activejdbc"}
+            if (activeJdbcDep) {
+                compileActiveJdbcVersion = activeJdbcDep.version
+                project.logger.debug "ActiveJDBCPlugin.getActiveJdbcVersion: version=$compileActiveJdbcVersion"
+            }
+        }
+
+        Configuration compileConfig = project.configurations.getByName("compile")
+        compileConfig.withDependencies(getActiveJdbcVersion)
+        Configuration implConfig = project.configurations.getByName("implementation")
+        implConfig.withDependencies(getActiveJdbcVersion)
+
         Configuration activeJdbcConfig = project.configurations.maybeCreate("activejdbc")
         activeJdbcConfig.setVisible(false)
         activeJdbcConfig.setDescription("The ActiveJDBC libraries to be used for this project.")
         activeJdbcConfig.withDependencies { dependencies ->
-            dependencies.add(project.dependencies.create("org.javalite:activejdbc-instrumentation:"
-                    + activeJdbcExtension.toolVersion))
-            dependencies.add(project.dependencies.create("org.javalite:activejdbc:"
-                    + activeJdbcExtension.toolVersion))
+            def activeJdbcVersion = defaultToolVersion
+
+            if (activeJdbcExtension.toolVersion) {
+                activeJdbcVersion = activeJdbcExtension.toolVersion
+            }
+            else if (compileActiveJdbcVersion) {
+                project.logger.info "ActiveJDBCPlugin: using ActiveJDBC version $compileActiveJdbcVersion from compileClasspath"
+                activeJdbcVersion = compileActiveJdbcVersion
+            }
+
+            dependencies.add(project.dependencies.create("org.javalite:activejdbc-instrumentation:" + activeJdbcVersion))
+            dependencies.add(project.dependencies.create("org.javalite:activejdbc:" + activeJdbcVersion))
         }
 
         project.plugins.withType(JavaPlugin) {

@@ -45,6 +45,23 @@ repositories {
 }
         '''
 
+    private static final String BUILD_FILE_2_3_1_j8 =
+            '''
+
+plugins {
+    id 'java'
+    id 'de.schablinski.activejdbc-gradle-plugin'
+}   
+
+dependencies {
+    compile 'org.javalite:activejdbc:2.3.1-j8'
+}
+
+repositories {
+    mavenCentral()
+}
+        '''
+
     File javaDir
 
     def setup() {
@@ -123,6 +140,25 @@ repositories {
         then:
         result.task(":classes").outcome == TaskOutcome.SUCCESS
         result.getOutput() =~ /Starting process.*activejdbc-instrumentation-${givenToolVersion}.jar.*/
+
+        log.debug "Gradle output: " + result.getOutput()
+    }
+
+    def "should use ActiveJDBC 2.3.1-j8 from compileClasspath if toolVersion is not specified" () {
+        given:
+        def expectedToolVersion = '2.3.1-j8'
+
+        buildFile << BUILD_FILE_2_3_1_j8
+
+        AntBuilder ant = new AntBuilder()
+        ant.copy(file : 'src/test/resources/Address.java', toDir: javaDir)
+
+        when:
+        BuildResult result = createGradleRunner('classes').build()
+
+        then:
+        result.task(":classes").outcome == TaskOutcome.SUCCESS
+        result.getOutput() =~ /Starting process.*activejdbc-instrumentation-${expectedToolVersion}.jar.*/
 
         log.debug "Gradle output: " + result.getOutput()
     }
