@@ -65,6 +65,7 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
             def activeJdbcVersion = defaultToolVersion
 
             if (activeJdbcExtension.toolVersion) {
+                project.logger.info "ActiveJDBCGradlePlugin: using explicit tool version=" + activeJdbcExtension.toolVersion
                 activeJdbcVersion = activeJdbcExtension.toolVersion
             }
             else if (compileActiveJdbcVersion) {
@@ -83,7 +84,6 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
             // use it as doLast action, because Gradle takes hashes of class files for incremental build afterwards
             project.tasks.compileJava.doLast {
-                project.logger.info "ActiveJDBCGradlePlugin: tool version=" + activeJdbcExtension.toolVersion
                 instrumentModels.instrument()
             }
         }
