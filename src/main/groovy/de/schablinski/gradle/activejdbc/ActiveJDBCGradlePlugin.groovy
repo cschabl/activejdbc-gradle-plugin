@@ -50,10 +50,13 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
             }
         }
 
-        Configuration compileConfig = project.configurations.getByName("compile")
-        compileConfig.withDependencies(getActiveJdbcVersion)
-        Configuration implConfig = project.configurations.getByName("implementation")
-        implConfig.withDependencies(getActiveJdbcVersion)
+        project.plugins.withId("java") {
+            Configuration compileConfig = project.configurations.getByName("compile")
+            compileConfig.withDependencies(getActiveJdbcVersion)
+
+            Configuration implConfig = project.configurations.getByName("implementation")
+            implConfig.withDependencies(getActiveJdbcVersion)
+        }
 
         Configuration activeJdbcConfig = project.configurations.maybeCreate("activejdbc")
         activeJdbcConfig.setVisible(false)
