@@ -8,6 +8,8 @@
 
 Gradle plugin for instrumenting your project's model classes for the [ActiveJDBC](http://javalite.io/activejdbc) ORM framework.
 
+The plugin has been tested with ActiveJDBC 2.0 to 2.3.1-j8.
+
 ## Usage
 
 Add the plugin in addition to Java plugin to the build.gradle file as follows:
@@ -15,22 +17,30 @@ Add the plugin in addition to Java plugin to the build.gradle file as follows:
 ```
 plugins {
     id 'java'
-    id 'de.schablinski.activejdbc-gradle-plugin' version '1.4'
+    id 'de.schablinski.activejdbc-gradle-plugin' version '1.5'
 }
 ```
 
-This will create a task `instrumentJavaModels` in the task group `build` which is added as `doLast` action to the `compileJava` task.
+This will create a task `instrumentModels` in the task group `build` which is added as `doLast` action to the `compileJava` task.
 
 ### Configuration
 
-The version of the ActiveJDBC instrumentation tool can be configured as follows:
+The version of the ActiveJDBC instrumentation tool is determined by the plugin from the version of the activejdbc.jar used as compile or implementation dependency in the build script.
+For backward compatability or as a last resort, the instrumentation tool version can be configured as follows:
 
 ```
 activejdbc.toolVersion = '2.2'
 ```
 
-The default version is 2.3.
-The plugin has been tested with ActiveJDBC 2.0 to 2.3.1-j8.
+If the ActiveJDBC model classes of the project have compile-time dependencies on 3rd-party libraries, they must be added to the _activejdbc_ configuration (see example below).
+
+```
+dependencies {
+    ...
+    activejdbc 'org.scala-lang:scala-library:2.12.6'
+    ...
+}
+```
 
 ## Other JVM languages
 
