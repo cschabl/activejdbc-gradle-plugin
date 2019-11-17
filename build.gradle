@@ -11,6 +11,7 @@ group = 'de.schablinski.gradle.activejdbc'
 description = """Gradle plugin for instrumenting ActiveJDBC model classes."""
 
 def activeJdbcVersion = '2.3'
+def slf4JSimpleVersion = '1.7.29'
 
 repositories {
 
@@ -41,6 +42,7 @@ task processVersionFile(type: WriteProperties) {
   outputFile file("$buildDir/resources/main/activejdbc-gradle-plugin.properties")
 
   property 'activejdbc-version', activeJdbcVersion
+  property 'slf4j-simple-version', slf4JSimpleVersion
 }
 tasks.classes.dependsOn processVersionFile
 

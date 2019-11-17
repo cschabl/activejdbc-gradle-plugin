@@ -32,9 +32,13 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
     static final String EXTENSION_NAME = 'activejdbc'
 
+    private Properties buildTimeProps
+
     @Override
     void apply(Project project) {
-        String defaultToolVersion = loadToolVersion()
+        loadBuildTimeProperties()
+
+        String defaultToolVersion = buildTimeProps.getProperty("activejdbc-version")
         ActiveJDBCExtension activeJdbcExtension = project.extensions.create(EXTENSION_NAME, ActiveJDBCExtension)
 
         if (!project.getPluginManager().hasPlugin("java")) {
@@ -75,6 +79,7 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
             dependencies.add(project.dependencies.create("org.javalite:activejdbc-instrumentation:" + activeJdbcVersion))
             dependencies.add(project.dependencies.create("org.javalite:activejdbc:" + activeJdbcVersion))
+            dependencies.add(project.dependencies.create("org.slf4j:slf4j-simple:" + buildTimeProps.get("slf4j-simple-version")))
         }
 
         project.plugins.withType(JavaPlugin) {
@@ -109,15 +114,14 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
         }
     }
 
-    private String loadToolVersion() {
+    private void loadBuildTimeProperties() {
         URL url = ActiveJDBCGradlePlugin.class.getClassLoader().getResource("activejdbc-gradle-plugin.properties")
         InputStream input
 
         try {
             input = url.openStream()
-            Properties prop = new Properties()
-            prop.load(input)
-            return prop.getProperty("activejdbc-version")
+            buildTimeProps = new Properties()
+            buildTimeProps.load(input)
         }
         finally {
             input?.close()
