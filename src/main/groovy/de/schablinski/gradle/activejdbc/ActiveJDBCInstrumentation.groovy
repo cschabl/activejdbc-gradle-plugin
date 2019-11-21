@@ -62,7 +62,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
 
     @TaskAction
     def instrument() {
-        logger.info "ActiveJDBCInstrumentation.instrument"
+        logger.debug "ActiveJDBCInstrumentation.instrument"
 
         FileCollection instrumentationClasspath = getActiveJdbcClasspath()
 
@@ -75,16 +75,30 @@ class ActiveJDBCInstrumentation extends DefaultTask {
             instrumentationClasspath += project.files(classesDir)
         }
 
+        log.info "Instrumenting ActiveJDBC model classes under $clasesDir"
+
         runInstrumentation(instrumentationClasspath, outputDir ?: classesDir)
     }
 
     private void runInstrumentation(FileCollection instrumentationClasspath, String outputDirpath) {
+        String slf4JLogLevel = getSlf4LogLevel()
+
         project.javaexec { JavaExecSpec jes ->
             logger.info "Running ActiveJDBC instrumentation instance with environment: ${jes.environment}"
 
             jes.classpath = instrumentationClasspath
             jes.main = Main.canonicalName
-            jes.systemProperties = ['outputDirectory': outputDirpath]
+            jes.systemProperties = ['outputDirectory': outputDirpath,
+                                    'org.slf4j.simpleLogger.defaultLogLevel': slf4JLogLevel]
         }
+    }
+
+    private String getSlf4LogLevel() {
+        if (logger.isTraceEnabled()) return 'trace'
+        if (logger.isDebugEnabled()) return 'debug'
+        if (logger.isInfoEnabled()) return 'info'
+        if (logger.isWarnEnabled()) return 'warn'
+        if (logger.isErrorEnabled()) return 'error'
+        return 'off'
     }
 }
