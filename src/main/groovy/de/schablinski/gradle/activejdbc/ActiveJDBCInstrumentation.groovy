@@ -75,7 +75,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
             instrumentationClasspath += project.files(classesDir)
         }
 
-        log.info "Instrumenting ActiveJDBC model classes under $clasesDir"
+        logger.info "Instrumenting ActiveJDBC model classes under $clasesDir"
 
         runInstrumentation(instrumentationClasspath, outputDir ?: classesDir)
     }
