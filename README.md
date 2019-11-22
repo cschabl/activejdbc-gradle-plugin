@@ -26,7 +26,7 @@ This will create a task `instrumentModels` in the task group `build` which is ad
 ### Configuration
 
 The version of the ActiveJDBC instrumentation tool is determined by the plugin from the version of the activejdbc.jar used as compile or implementation dependency in the build script.
-For backward compatability or as a last resort, the instrumentation tool version can be configured as follows:
+For backward compatibility or as a last resort, the instrumentation tool version can be configured as follows:
 
 ```
 activejdbc.toolVersion = '2.2'
