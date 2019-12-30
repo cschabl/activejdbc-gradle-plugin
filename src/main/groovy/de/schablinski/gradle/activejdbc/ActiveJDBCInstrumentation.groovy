@@ -82,6 +82,8 @@ class ActiveJDBCInstrumentation extends DefaultTask {
 
     private void runInstrumentation(FileCollection instrumentationClasspath, String outputDirpath) {
         String slf4JLogLevel = getSlf4LogLevel()
+        StdOutCaptor stdOutCaptor = new StdOutCaptor()
+        StdOutCaptor stdErrCaptor = new StdOutCaptor()
 
         project.javaexec { JavaExecSpec jes ->
             logger.info "Running ActiveJDBC instrumentation instance with environment: ${jes.environment}"
@@ -90,6 +92,18 @@ class ActiveJDBCInstrumentation extends DefaultTask {
             jes.main = Main.canonicalName
             jes.systemProperties = ['outputDirectory': outputDirpath,
                                     'org.slf4j.simpleLogger.defaultLogLevel': slf4JLogLevel]
+
+
+
+            jes.standardOutput = stdOutCaptor
+            jes.errorOutput = stdErrCaptor
+        }
+
+        if (stdOutCaptor.getContent()) {
+            logger.info stdOutCaptor.getContent()
+        }
+        if (stdErrCaptor.getContent()) {
+            logger.error stdErrCaptor.getContent()
         }
     }
 
@@ -100,5 +114,26 @@ class ActiveJDBCInstrumentation extends DefaultTask {
         if (logger.isWarnEnabled()) return 'warn'
         if (logger.isErrorEnabled()) return 'error'
         return 'off'
+    }
+
+    private class StdOutCaptor extends PrintStream
+    {
+
+        private String content
+
+        StdOutCaptor()
+        {
+            super(new ByteArrayOutputStream(), true)
+        }
+
+        String getContent() {
+            return content
+        }
+
+        @Override
+        void close() {
+            content = ((ByteArrayOutputStream) out).toString()
+            super.close()
+        }
     }
 }
