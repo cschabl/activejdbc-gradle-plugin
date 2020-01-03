@@ -20,6 +20,7 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.JavaExecSpec
+import org.gradle.process.internal.ExecException
 import org.javalite.instrumentation.Main
 
 /**
@@ -85,25 +86,29 @@ class ActiveJDBCInstrumentation extends DefaultTask {
         StdOutCaptor stdOutCaptor = new StdOutCaptor()
         StdOutCaptor stdErrCaptor = new StdOutCaptor()
 
-        project.javaexec { JavaExecSpec jes ->
-            logger.info "Running ActiveJDBC instrumentation instance with environment: ${jes.environment}"
+        try {
+            project.javaexec { JavaExecSpec jes ->
+                logger.info "Running ActiveJDBC instrumentation instance with environment: ${jes.environment}"
 
-            jes.classpath = instrumentationClasspath
-            jes.main = Main.canonicalName
-            jes.systemProperties = ['outputDirectory': outputDirpath,
-                                    'org.slf4j.simpleLogger.defaultLogLevel': slf4JLogLevel]
+                jes.classpath = instrumentationClasspath
+                jes.main = Main.canonicalName
+                jes.systemProperties = ['outputDirectory'                       : outputDirpath,
+                                        'org.slf4j.simpleLogger.defaultLogLevel': slf4JLogLevel]
 
-
-
-            jes.standardOutput = stdOutCaptor
-            jes.errorOutput = stdErrCaptor
+                jes.standardOutput = stdOutCaptor
+                jes.errorOutput = stdErrCaptor
+            }
         }
-
-        if (stdOutCaptor.getContent()) {
-            logger.info stdOutCaptor.getContent()
+        catch (ExecException ex) {
+            throw ex
         }
-        if (stdErrCaptor.getContent()) {
-            logger.error stdErrCaptor.getContent()
+        finally {
+            if (stdOutCaptor.getContent()) {
+                logger.info stdOutCaptor.getContent()
+            }
+            if (stdErrCaptor.getContent()) {
+                logger.error stdErrCaptor.getContent()
+            }
         }
     }
 
