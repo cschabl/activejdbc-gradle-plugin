@@ -8,7 +8,7 @@
 
 Gradle plugin for instrumenting your project's model classes for the [ActiveJDBC](http://javalite.io/activejdbc) ORM framework.
 
-The plugin has been tested with ActiveJDBC 2.0 to 2.3.1-j8.
+The plugin has been tested with ActiveJDBC 2.0 to 2.3.2-j8.
 
 ## Usage
 

@@ -125,9 +125,9 @@ repositories {
         log.debug "Gradle output: " + result.getOutput()
     }
 
-    def "should use ActiveJDBC version 2.3.1-j8" () {
+    def "should use ActiveJDBC version 2.3.2-j8" () {
         given:
-        def givenToolVersion = '2.3.1-j8'
+        def givenToolVersion = '2.3.2-j8'
 
         buildFile << createBuildScript(givenToolVersion)
 
