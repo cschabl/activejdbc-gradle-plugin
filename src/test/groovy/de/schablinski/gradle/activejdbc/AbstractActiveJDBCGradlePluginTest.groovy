@@ -25,11 +25,14 @@ abstract class AbstractActiveJDBCGradlePluginTest extends Specification {
     List pluginClasspath
 
     File buildFile
+    File gradleSettings
 
     def setup() {
         pluginClasspath = getClass().classLoader.findResource('plugin-classpath.txt').readLines().collect { new File(it) }
 
         buildFile = testProjectDir.newFile('build.gradle')
+        gradleSettings = testProjectDir.newFile('settings.gradle')
+        gradleSettings.write('rootProject.name = \'activejdbc-gradle-plugin-test-project\'')
         log.debug "buildFile=$buildFile"
     }
 
