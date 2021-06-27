@@ -3,7 +3,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
   id 'groovy'
   id 'java-gradle-plugin'
-  id 'com.gradle.plugin-publish' version '0.10.0'
+  id 'com.gradle.plugin-publish' version '0.15.0'
   id "net.researchgate.release" version "2.7.0"
 }
 
