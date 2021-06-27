@@ -17,7 +17,7 @@ plugins {
 }   
 
 dependencies {
-    compile 'org.javalite:activejdbc:2.3'
+    implementation 'org.javalite:activejdbc:2.3'
 }
 
 repositories {
@@ -37,7 +37,7 @@ plugins {
 activejdbc.toolVersion = '$version'
 
 dependencies {
-    compile 'org.javalite:activejdbc:$version'
+    implementation 'org.javalite:activejdbc:$version'
 }
 
 repositories {
@@ -54,7 +54,7 @@ plugins {
 }   
 
 dependencies {
-    compile 'org.javalite:activejdbc:2.3.1-j8'
+    implementation 'org.javalite:activejdbc:2.3.1-j8'
 }
 
 repositories {
@@ -65,7 +65,7 @@ repositories {
     File javaDir
 
     def setup() {
-        File srcDir = testProjectDir.newFolder('src')
+        File srcDir = new File(testProjectDir, 'src')
         javaDir = new File(new File(srcDir, 'main'), 'java')
         javaDir.mkdirs()
     }

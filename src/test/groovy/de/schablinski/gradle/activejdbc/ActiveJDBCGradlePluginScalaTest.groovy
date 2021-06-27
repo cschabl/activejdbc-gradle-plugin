@@ -16,8 +16,8 @@ plugins {
 }   
 
 dependencies {
-    compile 'org.scala-lang:scala-library:2.12.6'
-    compile 'org.javalite:activejdbc:2.2'
+    implementation 'org.scala-lang:scala-library:2.12.6'
+    implementation 'org.javalite:activejdbc:2.2'
     activejdbc 'org.scala-lang:scala-library:2.12.6'
 }
 
@@ -30,7 +30,7 @@ repositories {
     File javaDir
 
     def setup() {
-        File srcDir = testProjectDir.newFolder('src')
+        File srcDir = new File(testProjectDir, 'src')
         scalaDir = new File(new File(srcDir, 'main'), 'scala')
         scalaDir.mkdirs()
         javaDir = new File(new File(srcDir, 'main'), 'java')

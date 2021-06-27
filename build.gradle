@@ -31,8 +31,9 @@ dependencies {
   // Debugging your plugin code with Gradle TestKit: set system property org.gradle.testkit.debug to true in the unit test's run configuration of your IDE
   testImplementation gradleTestKit()
 
-  testImplementation "junit:junit:4.12"
-  testImplementation ("org.spockframework:spock-core:1.2-groovy-2.4") {
+  //testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
+  //testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
+  testImplementation ("org.spockframework:spock-core:2.0-groovy-3.0") {
     exclude group: "org.codehaus.groovy", module: "groovy-all"
   }
   testImplementation "org.apache.logging.log4j:log4j-api:2.11.1", "org.apache.logging.log4j:log4j-core:2.11.1"
@@ -51,13 +52,13 @@ processTestResources {
 }
 
 task docJar(type: Jar, dependsOn: groovydoc) {
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
     from 'build/docs/groovydoc'
 }
 
 task sourceJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+  archiveClassifier.set('sources')
+  from sourceSets.main.allSource
 }
 
 
@@ -71,6 +72,10 @@ task createPluginClasspath {
     outputDir.mkdirs()
     file("${outputDir}/plugin-classpath.txt").text = sourceSets.test.runtimeClasspath.join('\n',)
   }
+}
+
+test {
+  useJUnitPlatform()
 }
 
 test.dependsOn << 'createPluginClasspath'

@@ -2,9 +2,8 @@ package de.schablinski.gradle.activejdbc
 
 import groovy.util.logging.Log4j2
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 @Log4j2
 abstract class AbstractActiveJDBCGradlePluginTest extends Specification {
@@ -19,8 +18,9 @@ abstract class AbstractActiveJDBCGradlePluginTest extends Specification {
         testPropsStream.close()
     }
 
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder(new File(TEST_PROPS.getProperty("gradleTestKit.dir")))
+
+    @TempDir
+    File testProjectDir
 
     List pluginClasspath
 
@@ -30,15 +30,15 @@ abstract class AbstractActiveJDBCGradlePluginTest extends Specification {
     def setup() {
         pluginClasspath = getClass().classLoader.findResource('plugin-classpath.txt').readLines().collect { new File(it) }
 
-        buildFile = testProjectDir.newFile('build.gradle')
-        gradleSettings = testProjectDir.newFile('settings.gradle')
+        buildFile = new File(testProjectDir, 'build.gradle')
+        gradleSettings = new File(testProjectDir, 'settings.gradle')
         gradleSettings.write('rootProject.name = \'activejdbc-gradle-plugin-test-project\'')
         log.debug "buildFile=$buildFile"
     }
 
     protected GradleRunner createGradleRunner(String taskName) {
         return GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
+                .withProjectDir(testProjectDir)
                 .withPluginClasspath(pluginClasspath)
                 .withArguments(taskName, '--info', '--stacktrace')
         // .withDebug(true)

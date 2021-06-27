@@ -16,8 +16,8 @@ plugins {
 }   
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy:2.4.15'
-    compile 'org.javalite:activejdbc:2.3'
+    implementation 'org.codehaus.groovy:groovy:2.4.15'
+    implementation 'org.javalite:activejdbc:2.3'
 }
 
 repositories {
@@ -29,7 +29,7 @@ repositories {
     File javaDir
 
     def setup() {
-        File srcDir = testProjectDir.newFolder('src')
+        File srcDir = new File(testProjectDir, 'src')
         groovyDir = new File(new File(srcDir, 'main'), 'groovy')
         groovyDir.mkdirs()
         javaDir = new File(new File(srcDir, 'main'), 'java')
