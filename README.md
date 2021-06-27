@@ -55,8 +55,8 @@ plugins {
 }   
 
 dependencies {
-    compile 'org.scala-lang:scala-library:2.12.6'
-    compile 'org.javalite:activejdbc:2.3'
+    implementation 'org.scala-lang:scala-library:2.12.6'
+    implementation 'org.javalite:activejdbc:2.3'
     
     activejdbc 'org.scala-lang:scala-library:2.12.6'
 }
@@ -79,8 +79,8 @@ plugins {
 }   
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy:2.4.15'
-    compile 'org.javalite:activejdbc:2.3'
+    implementation 'org.codehaus.groovy:groovy:2.4.15'
+    implementation 'org.javalite:activejdbc:2.3'
     
     // The Groovy library is only required on the instrumentation classpath, if the model classes depend on the GDK
     // activejdbc 'org.codehaus.groovy:groovy:2.4.15'
