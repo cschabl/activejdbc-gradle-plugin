@@ -1,5 +1,6 @@
 package de.schablinski.gradle.activejdbc
 
+import groovy.ant.AntBuilder
 import groovy.text.SimpleTemplateEngine
 import groovy.util.logging.Log4j2
 import org.gradle.testkit.runner.BuildResult

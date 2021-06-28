@@ -31,8 +31,6 @@ dependencies {
   // Debugging your plugin code with Gradle TestKit: set system property org.gradle.testkit.debug to true in the unit test's run configuration of your IDE
   testImplementation gradleTestKit()
 
-  //testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
-  //testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
   testImplementation ("org.spockframework:spock-core:2.0-groovy-3.0") {
     exclude group: "org.codehaus.groovy", module: "groovy-all"
   }
