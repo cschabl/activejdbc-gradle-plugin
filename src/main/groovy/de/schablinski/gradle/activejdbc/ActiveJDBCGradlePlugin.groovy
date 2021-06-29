@@ -15,6 +15,7 @@
  */
 package de.schablinski.gradle.activejdbc
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -36,6 +37,11 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+        if (GradleUtils.getGradleMajorVersion(project) < 7) {
+            throw new GradleException("This version of plugin activejdbc-gradle-plugin requires Gradle 7 oder higher. " +
+                    "Use activejdbc-gradle-plugin 1.5.2 for older Gradle versions.")
+        }
+
         loadBuildTimeProperties()
 
         String defaultToolVersion = buildTimeProps.getProperty("activejdbc-version")
@@ -55,10 +61,6 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
         }
 
         project.plugins.withId("java") {
-            if (GradleUtils.getGradleMajorVersion(project) < 7) {
-                Configuration compileConfig = project.configurations.getByName("compile")
-                compileConfig.withDependencies(getActiveJdbcVersion)
-            }
             Configuration implConfig = project.configurations.getByName("implementation")
             implConfig.withDependencies(getActiveJdbcVersion)
         }
