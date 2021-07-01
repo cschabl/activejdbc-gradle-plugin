@@ -8,7 +8,10 @@
 
 Gradle plugin for instrumenting your project's model classes for the [ActiveJDBC](http://javalite.io/activejdbc) ORM framework.
 
-The plugin has been tested with ActiveJDBC 2.0 to 2.5-j8 and Gradle 3 to 6.8.
+Version 2.0 of the plugin requires Gradle 7 or higher.
+Use Version 1.5.2 for older Gradle versions.
+
+The plugin has been tested with ActiveJDBC 2.0 to 2.5-j8.
 
 ## Usage
 
@@ -17,7 +20,7 @@ Add the plugin in addition to Java plugin to the build.gradle file as follows:
 ```
 plugins {
     id 'java'
-    id 'de.schablinski.activejdbc-gradle-plugin' version '1.5.2'
+    id 'de.schablinski.activejdbc-gradle-plugin' version '2.0'
 }
 ```
 
