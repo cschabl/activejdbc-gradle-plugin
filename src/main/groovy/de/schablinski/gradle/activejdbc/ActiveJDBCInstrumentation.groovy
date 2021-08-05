@@ -91,7 +91,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
                 logger.info "Running ActiveJDBC instrumentation instance with environment: ${jes.environment}"
 
                 jes.classpath = instrumentationClasspath
-                jes.main = Main.canonicalName
+                jes.mainClass = Main.canonicalName
                 jes.systemProperties = ['outputDirectory'                       : outputDirpath,
                                         'org.slf4j.simpleLogger.defaultLogLevel': slf4JLogLevel]
 

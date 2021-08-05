@@ -5,8 +5,8 @@ import org.gradle.api.Project
 class GradleUtils {
     static File getJavaMainOutputDir(Project project)
     {
-        return getGradleMajorVersion(project) > 3 ? project.sourceSets.main.java.outputDir
-                : project.sourceSets.main.output.classesDir
+        def classesDir = project.sourceSets.main.java.classesDirectory.getAsFile().get()
+        return classesDir
     }
 
     static int getGradleMajorVersion(Project project)
