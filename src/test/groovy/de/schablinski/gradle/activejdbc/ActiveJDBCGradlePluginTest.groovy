@@ -18,7 +18,7 @@ plugins {
 }   
 
 dependencies {
-    implementation 'org.javalite:activejdbc:2.3'
+    implementation 'org.javalite:activejdbc:2.6-j8'
 }
 
 repositories {
@@ -121,7 +121,7 @@ repositories {
         then:
         result.task(":classes").outcome == TaskOutcome.SUCCESS
         result.getOutput() =~ /Starting process.*activejdbc-instrumentation-${givenToolVersion}.jar.*/
-        !(result.getOutput() =~ /Starting process.*activejdbc-instrumentation-2.2.jar.*/)
+        !(result.getOutput() =~ /Starting process.*activejdbc-instrumentation-2.6-j8.jar.*/)
 
         log.debug "Gradle output: " + result.getOutput()
     }
