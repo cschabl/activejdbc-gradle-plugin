@@ -11,7 +11,7 @@ group = 'de.schablinski.gradle.activejdbc'
 description = """Gradle plugin for instrumenting ActiveJDBC model classes."""
 
 def activeJdbcVersion = '2.3'
-def slf4JSimpleVersion = '1.7.29'
+def slf4JSimpleVersion = '1.7.32'
 
 repositories {
 
@@ -34,7 +34,7 @@ dependencies {
   testImplementation ("org.spockframework:spock-core:2.0-groovy-3.0") {
     exclude group: "org.codehaus.groovy", module: "groovy-all"
   }
-  testImplementation "org.apache.logging.log4j:log4j-api:2.11.1", "org.apache.logging.log4j:log4j-core:2.11.1"
+  testImplementation "org.apache.logging.log4j:log4j-api:2.17.1", "org.apache.logging.log4j:log4j-core:2.17.1"
 }
 
 task processVersionFile(type: WriteProperties) {
