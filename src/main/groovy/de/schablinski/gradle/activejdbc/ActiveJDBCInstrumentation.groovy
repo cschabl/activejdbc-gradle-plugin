@@ -18,6 +18,8 @@ package de.schablinski.gradle.activejdbc
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.JavaExecSpec
 import org.gradle.process.internal.ExecException
@@ -29,9 +31,11 @@ import org.javalite.instrumentation.Main
 class ActiveJDBCInstrumentation extends DefaultTask {
 
     /** The directory containing class files to be instrumented. */
+    @InputDirectory
     String classesDir
 
     /** The output directory to write back classes after instrumentation. */
+    @OutputDirectory
     String outputDir
 
     private FileCollection activeJdbcClasspath
