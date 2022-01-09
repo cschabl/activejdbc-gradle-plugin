@@ -2,7 +2,7 @@
 
 <div align="left">
 
-[![Build Status](https://travis-ci.com/cschabl/activejdbc-gradle-plugin.svg?branch=master)](https://travis-ci.com/cschabl/activejdbc-gradle-plugin)
+![Build Status](https://github.com/cschabl/activejdbc-gradle-plugin/actions/workflows/gradle.yml/badge.svg)
 
 </div>
 
