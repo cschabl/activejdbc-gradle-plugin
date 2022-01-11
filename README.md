@@ -11,7 +11,7 @@ Gradle plugin for instrumenting your project's model classes for the [ActiveJDBC
 Version 2.0 of the plugin requires Gradle 7 or higher.
 Use version 1.5.2 for older Gradle versions.
 
-The plugin has been tested with ActiveJDBC 2.0 to 2.5-j8.
+The plugin has been tested with ActiveJDBC 2.0 to 2.6-j8.
 
 ## Usage
 
@@ -20,7 +20,7 @@ Add the plugin in addition to Java plugin to the build.gradle file as follows:
 ```
 plugins {
     id 'java'
-    id 'de.schablinski.activejdbc-gradle-plugin' version '2.0'
+    id 'de.schablinski.activejdbc-gradle-plugin' version '2.0.1'
 }
 ```
 
