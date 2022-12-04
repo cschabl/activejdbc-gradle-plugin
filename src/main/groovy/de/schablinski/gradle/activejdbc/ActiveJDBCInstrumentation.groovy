@@ -87,8 +87,8 @@ class ActiveJDBCInstrumentation extends DefaultTask {
 
     private void runInstrumentation(FileCollection instrumentationClasspath, String outputDirpath) {
         String slf4JLogLevel = getSlf4LogLevel()
-        StdOutCaptor stdOutCaptor = new StdOutCaptor()
-        StdOutCaptor stdErrCaptor = new StdOutCaptor()
+        StdOutCaptor stdOutCaptor = StdOutCaptor.newInstance()
+        StdOutCaptor stdErrCaptor = StdOutCaptor.newInstance()
 
         try {
             project.javaexec { JavaExecSpec jes ->
@@ -125,14 +125,23 @@ class ActiveJDBCInstrumentation extends DefaultTask {
         return 'off'
     }
 
-    private class StdOutCaptor extends PrintStream
+    private static class StdOutCaptor extends PrintStream
     {
 
+        private ByteArrayOutputStream capturingOutputStream
         private String content
 
-        StdOutCaptor()
-        {
-            super(new ByteArrayOutputStream(), true)
+        static StdOutCaptor newInstance() {
+            def out = new ByteArrayOutputStream()
+            def stdOutCaptor = new StdOutCaptor(out)
+
+            // Can't access protected field 'out' of PrintStream's super class in Java 17, anymore
+            stdOutCaptor.capturingOutputStream = out
+            return stdOutCaptor
+        }
+
+        StdOutCaptor(ByteArrayOutputStream out) {
+            super(out, true)
         }
 
         String getContent() {
@@ -141,7 +150,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
 
         @Override
         void close() {
-            content = ((ByteArrayOutputStream) out).toString()
+            content = capturingOutputStream.toString()
             super.close()
         }
     }
