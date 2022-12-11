@@ -23,6 +23,11 @@ ext {
   
 }
 
+java {
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+}
+
 dependencies {
   implementation localGroovy()
 
