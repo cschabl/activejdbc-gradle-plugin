@@ -31,7 +31,7 @@ jobs:
       with:
         arguments: build
 
-  gradle-current:
+  gradle-current-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -41,5 +41,9 @@ jobs:
           java-version: 8
       - uses: gradle/gradle-build-action@v2
         with:
+          arguments: assemble
+      - uses: gradle/gradle-build-action@v2
+        with:
           gradle-version: current
-      - run: gradle build
+          arguments: test
+
