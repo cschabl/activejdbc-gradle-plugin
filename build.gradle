@@ -36,7 +36,7 @@ dependencies {
   // Debugging your plugin code with Gradle TestKit: set system property org.gradle.testkit.debug to true in the unit test's run configuration of your IDE
   testImplementation gradleTestKit()
 
-  testImplementation ("org.spockframework:spock-core:2.0-groovy-3.0") {
+  testImplementation ("org.spockframework:spock-core:2.3-groovy-3.0") {
     exclude group: "org.codehaus.groovy", module: "groovy-all"
   }
   testImplementation "org.apache.logging.log4j:log4j-api:2.17.1", "org.apache.logging.log4j:log4j-core:2.17.1"

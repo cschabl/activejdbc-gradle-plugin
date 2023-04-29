@@ -5,6 +5,7 @@ import groovy.text.SimpleTemplateEngine
 import groovy.util.logging.Log4j2
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.IgnoreIf
 
 @Log4j2
 class ActiveJDBCGradlePluginTest extends AbstractActiveJDBCGradlePluginTest {
@@ -162,6 +163,24 @@ repositories {
         result.getOutput() =~ /Starting process.*activejdbc-instrumentation-${expectedToolVersion}.jar.*/
 
         log.debug "Gradle output: " + result.getOutput()
+    }
+
+
+    @IgnoreIf({ !jvm.java11Compatible })
+    def "should instrument with ActiveJDBC 3" () {
+        given:
+        def givenToolVersion = '3.4-j11'
+        buildFile << createBuildScript(givenToolVersion)
+
+        AntBuilder ant = new AntBuilder()
+        ant.copy(file : 'src/test/resources/Address.java', toDir: javaDir)
+
+        when:
+        BuildResult result = createGradleRunner('classes').build()
+
+        then:
+        result.task(":classes").outcome == TaskOutcome.SUCCESS
+        result.getOutput() =~ /Starting process.*activejdbc-instrumentation-${givenToolVersion}.jar.*/
     }
 
     private static def createBuildScript(def version) {
