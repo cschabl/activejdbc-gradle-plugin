@@ -23,6 +23,10 @@ ext {
   
 }
 
+if (project.hasProperty("testResultsDir")) {
+  testResultsDirName = "${project.getProperty('testResultsDir')}"
+}
+
 java {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8

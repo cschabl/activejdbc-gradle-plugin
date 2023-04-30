@@ -29,12 +29,12 @@ jobs:
     - name: Build with Gradle and Java ${{ matrix.java }}
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: build
+        arguments: build -PtestResultsDir=test-results-java-${{ matrix.java }}
     - name: Archive test report
       uses: actions/upload-artifact@v3
       with:
-        name: test-results
-        path: build/test-results/test/TEST-*.xml
+        name: test-results-java-${{ matrix.java }}
+        path: build/test-results-java-${{ matrix.java }}/test/TEST-*.xml
 
 # Can not not work, at the moment (current = Gradle 8)
 #  gradle-current-test:
