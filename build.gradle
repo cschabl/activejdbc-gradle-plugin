@@ -26,6 +26,9 @@ ext {
 if (project.hasProperty("testResultsDir")) {
   testResultsDirName = "${project.getProperty('testResultsDir')}"
 }
+if (project.hasProperty("reportingDir")) {
+  reporting.baseDir = project.getProperty('reportingDir')
+}
 
 java {
   sourceCompatibility = 1.8
