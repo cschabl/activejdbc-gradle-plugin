@@ -27,7 +27,7 @@ jobs:
         java-version: ${{ matrix.java }}
         distribution: 'adopt'
     - name: Build with Gradle and Java ${{ matrix.java }}
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/gradle-build-action@v2.4.2
       with:
         arguments: build -PtestResultsDir=test-results-java-${{ matrix.java }} -PreportingDir=./build/reports-java-${{ matrix.java }}
     - name: Archive test report
