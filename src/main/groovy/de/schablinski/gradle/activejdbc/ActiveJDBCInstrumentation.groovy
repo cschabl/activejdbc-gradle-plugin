@@ -21,9 +21,12 @@ import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
 import org.gradle.process.JavaExecSpec
 import org.gradle.process.internal.ExecException
 import org.javalite.instrumentation.Main
+
+import javax.inject.Inject
 
 /**
  * Gradle task for performing ActiveJDBC instrumentation on a set of compiled {@code .class} files.
@@ -38,6 +41,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
     @OutputDirectory
     String outputDir
 
+    private ExecOperations execOperations
     private FileCollection activeJdbcClasspath
 
     /**
@@ -61,7 +65,9 @@ class ActiveJDBCInstrumentation extends DefaultTask {
         this.activeJdbcClasspath = activeJdbcClasspath
     }
 
-    ActiveJDBCInstrumentation() {
+    @Inject
+    ActiveJDBCInstrumentation(ExecOperations execOperations) {
+        this.execOperations = execOperations
         description = "Instrument compiled class files extending from 'org.javalite.activejdbc.Model'"
     }
 
@@ -91,7 +97,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
         StdOutCaptor stdErrCaptor = StdOutCaptor.newInstance()
 
         try {
-            project.javaexec { JavaExecSpec jes ->
+            execOperations.javaexec { JavaExecSpec jes ->
                 logger.info "Running ActiveJDBC instrumentation instance with environment: ${jes.environment}"
 
                 jes.classpath = instrumentationClasspath
