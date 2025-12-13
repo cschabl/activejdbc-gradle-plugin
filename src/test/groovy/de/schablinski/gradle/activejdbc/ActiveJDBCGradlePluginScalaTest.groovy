@@ -17,13 +17,13 @@ plugins {
 }   
 
 dependencies {
-    implementation 'org.scala-lang:scala-library:2.12.6'
-    implementation 'org.javalite:activejdbc:2.2'
-    activejdbc 'org.scala-lang:scala-library:2.12.6'
+    implementation 'org.scala-lang:scala-library:2.13.18'
+    implementation 'org.javalite:activejdbc:2.3'
+    activejdbc 'org.scala-lang:scala-library:2.13.18'
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
         '''
 

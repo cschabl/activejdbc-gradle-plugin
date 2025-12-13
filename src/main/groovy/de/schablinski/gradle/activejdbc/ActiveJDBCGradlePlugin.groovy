@@ -37,9 +37,9 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        if (GradleUtils.getGradleMajorVersion(project) < 7) {
-            throw new GradleException("This version of plugin activejdbc-gradle-plugin requires Gradle 7 oder higher. " +
-                    "Use activejdbc-gradle-plugin 1.5.2 for older Gradle versions.")
+        if (GradleUtils.getGradleMajorVersion(project) < 9) {
+            throw new GradleException("This version of plugin activejdbc-gradle-plugin requires Gradle 9 oder higher. " +
+                    "Use activejdbc-gradle-plugin 2.0.4 for Gradle 7.x - 8.x.")
         }
 
         loadBuildTimeProperties()

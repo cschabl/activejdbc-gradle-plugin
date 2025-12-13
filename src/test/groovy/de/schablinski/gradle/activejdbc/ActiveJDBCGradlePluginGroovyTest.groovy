@@ -17,12 +17,12 @@ plugins {
 }   
 
 dependencies {
-    implementation 'org.codehaus.groovy:groovy:2.4.15'
+    implementation 'org.codehaus.groovy:groovy:3.0.25'
     implementation 'org.javalite:activejdbc:2.3'
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
         '''
 
