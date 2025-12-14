@@ -1,6 +1,6 @@
 # ActiveJDBC Gradle plugin
 
-<div align="left">
+<div>
 
 ![Build Status](https://github.com/cschabl/activejdbc-gradle-plugin/actions/workflows/gradle.yml/badge.svg)
 
@@ -8,8 +8,8 @@
 
 Gradle plugin for instrumenting your project's model classes for the [ActiveJDBC](http://javalite.io/activejdbc) ORM framework.
 
-Version 2.0 of the plugin requires Gradle 7 or higher.
-Use version 1.5.2 for older Gradle versions.
+Version 3.0 of the plugin requires Gradle 9.
+Use version 2.0 for Gradle 7.x - 8.x.
 
 The plugin has been tested with ActiveJDBC 2.0 to 2.6-j8.
 
@@ -20,7 +20,7 @@ Add the plugin in addition to Java plugin to the build.gradle file as follows:
 ```
 plugins {
     id 'java'
-    id 'de.schablinski.activejdbc-gradle-plugin' version '2.0.1'
+    id 'de.schablinski.activejdbc-gradle-plugin' version '3.0.0'
 }
 ```
 
@@ -40,7 +40,7 @@ If the ActiveJDBC model classes of the project have compile-time dependencies on
 ```
 dependencies {
     ...
-    activejdbc 'org.scala-lang:scala-library:2.12.6'
+    activejdbc 'org.scala-lang:scala-library:2.13.18'
     ...
 }
 ```
@@ -58,14 +58,14 @@ plugins {
 }   
 
 dependencies {
-    implementation 'org.scala-lang:scala-library:2.12.6'
+    implementation 'org.scala-lang:scala-library:2.13.18'
     implementation 'org.javalite:activejdbc:2.3'
     
-    activejdbc 'org.scala-lang:scala-library:2.12.6'
+    activejdbc 'org.scala-lang:scala-library:2.13.18'
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 ```
 
@@ -82,19 +82,19 @@ plugins {
 }   
 
 dependencies {
-    implementation 'org.codehaus.groovy:groovy:2.4.15'
+    implementation 'org.codehaus.groovy:groovy:3.0.25'
     implementation 'org.javalite:activejdbc:2.3'
     
     // The Groovy library is only required on the instrumentation classpath, if the model classes depend on the GDK
-    // activejdbc 'org.codehaus.groovy:groovy:2.4.15'
+    // activejdbc 'org.codehaus.groovy:groovy:3.0.25'
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 ```
 
-### JVM languages not yet supported supported by the plugin
+### JVM languages not yet supported by the plugin
 
 The ActiveJDBC model instrumentation is executed by the task [ActiveJDBCInstrumentation](./src/main/groovy/de/schablinski/gradle/activejdbc/ActiveJDBCInstrumentation.groovy).
 An instance of this task is added as doLast-action to the task _compileJava_ by the ActiveJDBC Gradle plugin, e.g.
@@ -104,7 +104,7 @@ First, a task of type _ActiveJDBCInstrumentation_ must be created with its prope
 Then, this task must be added as doLast-action to the language's compile-task. 
 
 The following build script snippet demonstrates these steps for Kotlin. 
-A complete [build script](https://github.com/cschabl/active-jdbc-gradle-kotlin-example/blob/master/build.gradle) can be found in the Kotlin example project [active-jdbc-gradle-kotlin-example](https://github.com/cschabl/active-jdbc-gradle-kotlin-example) at Github.
+A complete [build script](https://github.com/cschabl/active-jdbc-gradle-kotlin-example/blob/master/build.gradle) can be found in the Kotlin example project [active-jdbc-gradle-kotlin-example](https://github.com/cschabl/active-jdbc-gradle-kotlin-example) at GitHub.
 
 ```groovy
 task instrumentKotlinModels(type: ActiveJDBCInstrumentation) {
