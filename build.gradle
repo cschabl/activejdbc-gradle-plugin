@@ -72,11 +72,16 @@ docJar.configure {
   dependsOn groovydoc
 }
 
-tasks.register("sourceJar", Jar) {
+def sourceJar = tasks.register("sourceJar", Jar) {
   archiveClassifier.set('sources')
   from sourceSets.main.allSource
 }
 
+afterEvaluate {
+  tasks.named('generateMetadataFileForPluginMavenPublication') {
+    dependsOn sourceJar, docJar
+  }
+}
 
 def createPluginClasspath = tasks.register("createPluginClasspath") {
   Provider<Directory> outputDir = layout.buildDirectory.dir("resources/test")
