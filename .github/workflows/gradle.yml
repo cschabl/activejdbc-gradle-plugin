@@ -31,7 +31,7 @@ jobs:
       with:
         arguments: build -PtestResultsDir=test-results-java-${{ matrix.java }} -PreportingDir=./build/reports-java-${{ matrix.java }}
     - name: Archive test report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-results-java-${{ matrix.java }}
         path: |
