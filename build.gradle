@@ -52,8 +52,8 @@ dependencies {
   testImplementation "org.apache.logging.log4j:log4j-api:2.25.2", "org.apache.logging.log4j:log4j-core:2.25.2"
 }
 
-task processVersionFile(type: WriteProperties) {
-  destinationFile = file("$buildDir/resources/main/activejdbc-gradle-plugin.properties")
+tasks.register("processVersionFile", WriteProperties) {
+  destinationFile = layout.buildDirectory.file("resources/main/activejdbc-gradle-plugin.properties")
 
   property 'activejdbc-version', activeJdbcVersion
   property 'slf4j-simple-version', slf4JSimpleVersion
@@ -61,29 +61,34 @@ task processVersionFile(type: WriteProperties) {
 tasks.classes.dependsOn processVersionFile
 
 processTestResources {
-  filter ReplaceTokens, tokens: ["gradle-test-kit-dir" : new File(project.buildDir, "tmp").absolutePath.replace('\\', '/')]
+  filter ReplaceTokens, tokens: ["gradle-test-kit-dir" : layout.buildDirectory.dir("tmp").get().getAsFile().absolutePath.replace('\\', '/')]
 }
 
-task docJar(type: Jar, dependsOn: groovydoc) {
+def docJar = tasks.register("docJar", Jar) {
     archiveClassifier.set('javadoc')
     from 'build/docs/groovydoc'
 }
+docJar.configure {
+  dependsOn groovydoc
+}
 
-task sourceJar(type: Jar) {
+tasks.register("sourceJar", Jar) {
   archiveClassifier.set('sources')
   from sourceSets.main.allSource
 }
 
 
-task createPluginClasspath {
-  def outputDir = file("${buildDir}/resources/test")
+def createPluginClasspath = tasks.register("createPluginClasspath") {
+  Provider<Directory> outputDir = layout.buildDirectory.dir("resources/test")
 
   inputs.files sourceSets.test.runtimeClasspath
   outputs.dir outputDir
 
   doLast {
-    outputDir.mkdirs()
-    file("${outputDir}/plugin-classpath.txt").text = sourceSets.test.runtimeClasspath.join('\n',)
+    outputDir.get().getAsFile().mkdirs()
+    outputDir.get()
+            .file("plugin-classpath.txt")
+            .getAsFile().text = sourceSets.test.runtimeClasspath.join('\n',)
   }
 }
 
@@ -91,7 +96,7 @@ test {
   useJUnitPlatform()
 }
 
-test.dependsOn << 'createPluginClasspath'
+test.dependsOn << createPluginClasspath
 
 jar {
   manifest {
