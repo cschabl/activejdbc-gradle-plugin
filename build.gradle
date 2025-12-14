@@ -24,7 +24,7 @@ ext {
 }
 
 if (project.hasProperty("testResultsDir")) {
-  testResultsDirName = "${project.getProperty('testResultsDir')}"
+  java.testResultsDir = layout.buildDirectory.dir("${project.getProperty('testResultsDir')}")
 }
 if (project.hasProperty("reportingDir")) {
   reporting.baseDir = project.getProperty('reportingDir')
