@@ -27,7 +27,7 @@ if (project.hasProperty("testResultsDir")) {
   java.testResultsDir = layout.buildDirectory.dir("${project.getProperty('testResultsDir')}")
 }
 if (project.hasProperty("reportingDir")) {
-  reporting.baseDir = project.getProperty('reportingDir')
+  reporting.baseDirectory = file(project.getProperty('reportingDir'))
 }
 
 java {
