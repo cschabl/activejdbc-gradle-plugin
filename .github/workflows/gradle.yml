@@ -26,8 +26,9 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
         distribution: 'adopt'
-    - name: Build with Gradle and Java ${{ matrix.java }}
+    - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v5
+    - name: Build with Gradle and Java ${{ matrix.java }}
       run: ./gradlew build -PtestResultsDir=test-results-java-${{ matrix.java }} -PreportingDir=./build/reports-java-${{ matrix.java }}
     - name: Archive test report
       uses: actions/upload-artifact@v4
