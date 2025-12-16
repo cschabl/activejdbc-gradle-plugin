@@ -24,16 +24,14 @@ ext {
 }
 
 if (project.hasProperty("testResultsDir")) {
-  java.testResultsDir = layout.buildDirectory.dir("${project.getProperty('testResultsDir')}")
+  java.testResultsDir = layout.buildDirectory.dir("${project.property('testResultsDir')}")
 }
 if (project.hasProperty("reportingDir")) {
-  reporting.baseDirectory = file(project.getProperty('reportingDir'))
+  reporting.baseDirectory = file(project.property('reportingDir'))
 }
 
-java {
-  toolchain {
-    languageVersion = JavaLanguageVersion.of(17)
-  }
+tasks.withType(JavaCompile).configureEach {
+  options.release = 17
 }
 
 dependencies {
