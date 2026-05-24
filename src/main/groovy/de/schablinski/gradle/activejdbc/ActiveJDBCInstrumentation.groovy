@@ -23,7 +23,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 import org.gradle.process.JavaExecSpec
-import org.gradle.process.internal.ExecException
+import org.gradle.process.ProcessExecutionException
 import org.javalite.instrumentation.Main
 
 import javax.inject.Inject
@@ -52,7 +52,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
     @Classpath
     FileCollection getActiveJdbcClasspath() {
         if (!activeJdbcClasspath) {
-            activeJdbcClasspath = project.configurations.getByName("activejdbc")
+            activeJdbcClasspath = project.configurations.named("activejdbc").get()
         }
         return activeJdbcClasspath
     }
@@ -109,7 +109,7 @@ class ActiveJDBCInstrumentation extends DefaultTask {
                 jes.errorOutput = stdErrCaptor
             }
         }
-        catch (ExecException ex) {
+        catch (ProcessExecutionException ex) {
             throw ex
         }
         finally {
