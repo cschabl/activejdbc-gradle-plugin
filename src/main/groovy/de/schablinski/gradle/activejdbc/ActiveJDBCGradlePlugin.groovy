@@ -125,6 +125,10 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
                 }
             }
         }
+
+        project.getTasks().withType(ActiveJDBCInstrumentation).configureEach {
+            it.getActiveJdbcDependencies.from(activeJdbcConfig)
+        }
     }
 
     private void loadBuildTimeProperties() {

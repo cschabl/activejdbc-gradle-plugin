@@ -16,9 +16,12 @@
 package de.schablinski.gradle.activejdbc
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.Classpath
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
@@ -31,7 +34,7 @@ import javax.inject.Inject
 /**
  * Gradle task for performing ActiveJDBC instrumentation on a set of compiled {@code .class} files.
  */
-class ActiveJDBCInstrumentation extends DefaultTask {
+abstract class ActiveJDBCInstrumentation extends DefaultTask {
 
     /** The directory containing class files to be instrumented. */
     @InputDirectory
@@ -41,33 +44,16 @@ class ActiveJDBCInstrumentation extends DefaultTask {
     @OutputDirectory
     String outputDir
 
-    private ExecOperations execOperations
-    private FileCollection activeJdbcClasspath
+    @Inject
+    protected abstract ExecOperations getExecOperations()
 
-    /**
-     * Class path holding the ActiveJDBC library.
-     *
-     * @return class path holding the ActiveJDBC library
-     */
-    @Classpath
-    FileCollection getActiveJdbcClasspath() {
-        if (!activeJdbcClasspath) {
-            activeJdbcClasspath = project.configurations.named("activejdbc").get()
-        }
-        return activeJdbcClasspath
-    }
+    @Inject abstract ObjectFactory getObjectFactory()
 
-    /**
-     * @param activeJdbcClasspath
-     *            class path holding the ActiveJdbc library
-     */
-    void setActiveJdbcClasspath(FileCollection activeJdbcClasspath) {
-        this.activeJdbcClasspath = activeJdbcClasspath
-    }
+    @InputFiles
+    abstract ConfigurableFileCollection getGetActiveJdbcDependencies()
 
     @Inject
-    ActiveJDBCInstrumentation(ExecOperations execOperations) {
-        this.execOperations = execOperations
+    ActiveJDBCInstrumentation() {
         description = "Instrument compiled class files extending from 'org.javalite.activejdbc.Model'"
     }
 
@@ -75,16 +61,13 @@ class ActiveJDBCInstrumentation extends DefaultTask {
     def instrument() {
         logger.debug "ActiveJDBCInstrumentation.instrument"
 
-        FileCollection instrumentationClasspath = getActiveJdbcClasspath()
+        FileCollection instrumentationClasspath = getGetActiveJdbcDependencies()
 
         if (!classesDir) {
-            File javaMainOutputDir = GradleUtils.getJavaMainOutputDir(project)
-            classesDir = javaMainOutputDir.getPath()
-            instrumentationClasspath += project.files(javaMainOutputDir)
+            throw new GradleException("classesDir is not specified")
         }
-        else {
-            instrumentationClasspath += project.files(classesDir)
-        }
+
+        instrumentationClasspath += getObjectFactory().fileCollection().from(classesDir)
 
         logger.info "Instrumenting ActiveJDBC model classes under $classesDir"
 
@@ -97,11 +80,11 @@ class ActiveJDBCInstrumentation extends DefaultTask {
         StdOutCaptor stdErrCaptor = StdOutCaptor.newInstance()
 
         try {
-            execOperations.javaexec { JavaExecSpec jes ->
+            getExecOperations().javaexec { JavaExecSpec jes ->
                 logger.info "Running ActiveJDBC instrumentation instance with environment: ${jes.environment}"
 
                 jes.classpath = instrumentationClasspath
-                jes.mainClass = Main.canonicalName
+                jes.mainClass.set(Main.canonicalName)
                 jes.systemProperties = ['outputDirectory'                       : outputDirpath,
                                         'org.slf4j.simpleLogger.defaultLogLevel': slf4JLogLevel]
 
