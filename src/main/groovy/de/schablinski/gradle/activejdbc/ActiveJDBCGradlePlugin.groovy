@@ -84,44 +84,55 @@ class ActiveJDBCGradlePlugin implements Plugin<Project> {
             dependencies.add(project.dependencies.create("org.javalite:activejdbc:" + activeJdbcVersion))
             dependencies.add(project.dependencies.create("org.slf4j:slf4j-simple:" + buildTimeProps.get("slf4j-simple-version")))
         }
+        def activeJdbcDeps = project.objects.fileCollection().from(activeJdbcConfig)
 
         project.plugins.withType(JavaPlugin).configureEach {
+            String mainOutputDir = GradleUtils.getJavaMainOutputDir(project)
 
-            def instrumentModels = project.tasks.register('instrumentModels', ActiveJDBCInstrumentation) {
-                classesDir = GradleUtils.getJavaMainOutputDir(project)
+            project.tasks.register('instrumentModels', ActiveJDBCInstrumentation) {
+                classesDir = mainOutputDir
                 group = "build"
             }
 
+            def instrumentationAction= project.objects.newInstance(ActiveJDBCInstrumentationAction, mainOutputDir, activeJdbcDeps)
             // use it as doLast action, because Gradle takes hashes of class files for incremental build afterwards
             project.tasks.named(JvmConstants.COMPILE_JAVA_TASK_NAME) {
                 doLast {
-                    instrumentModels.get().instrument()
+                    instrumentationAction.execute(it)
                 }
             }
         }
 
         project.plugins.withType(GroovyPlugin).configureEach {
-            def instrumentGroovyModels = project.tasks.register('instrumentGroovyModels', ActiveJDBCInstrumentation) {
-                classesDir = project.sourceSets.main.groovy.classesDirectory.getAsFile().get()
+            String groovyOutputDir = project.sourceSets.main.groovy.classesDirectory.getAsFile().get().absolutePath
+
+            project.tasks.register('instrumentGroovyModels', ActiveJDBCInstrumentation) {
+                classesDir = groovyOutputDir
                 group = "build"
             }
+
+            def instrumentationAction = project.objects.newInstance(ActiveJDBCInstrumentationAction, groovyOutputDir, activeJdbcDeps)
             // use it as doLast action, because Gradle takes hashes of class files for incremental build afterwards
             project.tasks.named("compileGroovy") {
                 doLast {
-                    instrumentGroovyModels.get().instrument()
+                    instrumentationAction.execute(it)
                 }
             }
         }
 
         project.plugins.withType(ScalaPlugin).configureEach {
-            def instrumentScalaModels = project.tasks.register('instrumentScalaModels', ActiveJDBCInstrumentation) {
-                classesDir = project.sourceSets.main.scala.classesDirectory.getAsFile().get()
+            String scalaOutputDir = project.sourceSets.main.scala.classesDirectory.getAsFile().get().absolutePath
+
+            project.tasks.register('instrumentScalaModels', ActiveJDBCInstrumentation) {
+                classesDir = scalaOutputDir
                 group = "build"
-             }
+            }
+
+            def instrumentationAction = project.objects.newInstance(ActiveJDBCInstrumentationAction, scalaOutputDir, activeJdbcDeps)
             // use it as doLast action, because Gradle takes hashes of class files for incremental build afterwards
             project.tasks.named("compileScala") {
                 doLast {
-                    instrumentScalaModels.get().instrument()
+                    instrumentationAction.execute(it)
                 }
             }
         }
