@@ -33,6 +33,7 @@ import javax.inject.Inject
 
 /**
  * Gradle task for performing ActiveJDBC instrumentation on a set of compiled {@code .class} files.
+ * @Deprecated since 3.1.0
  */
 abstract class ActiveJDBCInstrumentation extends DefaultTask {
 
@@ -75,7 +76,7 @@ abstract class ActiveJDBCInstrumentation extends DefaultTask {
     }
 
     private void runInstrumentation(FileCollection instrumentationClasspath, String outputDirpath) {
-        String slf4JLogLevel = getSlf4LogLevel()
+        String slf4JLogLevel = GradleUtils.getSlf4LogLevel(logger)
         StdOutCaptor stdOutCaptor = StdOutCaptor.newInstance()
         StdOutCaptor stdErrCaptor = StdOutCaptor.newInstance()
 
@@ -102,45 +103,6 @@ abstract class ActiveJDBCInstrumentation extends DefaultTask {
             if (stdErrCaptor.getContent()) {
                 logger.error stdErrCaptor.getContent()
             }
-        }
-    }
-
-    private String getSlf4LogLevel() {
-        if (logger.isTraceEnabled()) return 'trace'
-        if (logger.isDebugEnabled()) return 'debug'
-        if (logger.isInfoEnabled()) return 'info'
-        if (logger.isWarnEnabled()) return 'warn'
-        if (logger.isErrorEnabled()) return 'error'
-        return 'off'
-    }
-
-    private static class StdOutCaptor extends PrintStream
-    {
-
-        private ByteArrayOutputStream capturingOutputStream
-        private String content
-
-        static StdOutCaptor newInstance() {
-            def out = new ByteArrayOutputStream()
-            def stdOutCaptor = new StdOutCaptor(out)
-
-            // Can't access protected field 'out' of PrintStream's super class in Java 17, anymore
-            stdOutCaptor.capturingOutputStream = out
-            return stdOutCaptor
-        }
-
-        StdOutCaptor(ByteArrayOutputStream out) {
-            super(out, true)
-        }
-
-        String getContent() {
-            return content
-        }
-
-        @Override
-        void close() {
-            content = capturingOutputStream.toString()
-            super.close()
         }
     }
 }

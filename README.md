@@ -6,12 +6,13 @@
 
 </div>
 
-Gradle plugin for instrumenting your project's model classes for the [ActiveJDBC](http://javalite.io/activejdbc) ORM framework.
+A Gradle plugin that instruments your project's model classes for the [ActiveJDBC](http://javalite.io/activejdbc) ORM framework.
 
-Version 3.0 of the plugin requires Gradle 9.
+As of version 3.0, of the plugin requires Gradle 9.
+As of version 3.1, the plugin supports Gradle's configuration cache.
 Use version 2.0 for Gradle 7.x - 8.x.
 
-The plugin has been tested with ActiveJDBC 2.0 to 2.6-j8.
+The plugin has been tested with ActiveJDBC versions 2.0 through 2.6-j8.
 
 ## Usage
 
@@ -24,18 +25,18 @@ plugins {
 }
 ```
 
-This will create a task `instrumentModels` in the task group `build` which is added as `doLast` action to the `compileJava` task.
+This adds a `doLast` action to the `compileJava` task that instruments the ActiveJDBC model classes.
 
 ### Configuration
 
-The version of the ActiveJDBC instrumentation tool is determined by the plugin from the version of the activejdbc.jar used as compile or implementation dependency in the build script.
-For backward compatibility or as a last resort, the instrumentation tool version can be configured as follows:
+The plugin determines the version of the ActiveJDBC instrumentation tool from the version of `activejdbc.jar` used as a `compile` or `implementation` dependency in your build script.
+For backward compatibility, or as a last resort, you can configure the instrumentation tool version manually:
 
 ```
 activejdbc.toolVersion = '2.2'
 ```
 
-If the ActiveJDBC model classes of the project have compile-time dependencies on 3rd-party libraries, they must be added to the _activejdbc_ configuration (see example below).
+If your project's ActiveJDBC model classes have compile-time dependencies on 3rd-party libraries, add them to the _activejdbc_ configuration (see example below).
 
 ```
 dependencies {
@@ -91,29 +92,6 @@ dependencies {
 
 repositories {
     mavenCentral()
-}
-```
-
-### JVM languages not yet supported by the plugin
-
-The ActiveJDBC model instrumentation is executed by the task [ActiveJDBCInstrumentation](./src/main/groovy/de/schablinski/gradle/activejdbc/ActiveJDBCInstrumentation.groovy).
-An instance of this task is added as doLast-action to the task _compileJava_ by the ActiveJDBC Gradle plugin, e.g.
-
-This task can be used to instrument ActiveJDBC model classes written in JVM languages not yet supported by this plugin.
-First, a task of type _ActiveJDBCInstrumentation_ must be created with its property _classesDir_ set to the output directory of the language's compiler.
-Then, this task must be added as doLast-action to the language's compile-task. 
-
-The following build script snippet demonstrates these steps for Kotlin. 
-A complete [build script](https://github.com/cschabl/active-jdbc-gradle-kotlin-example/blob/master/build.gradle) can be found in the Kotlin example project [active-jdbc-gradle-kotlin-example](https://github.com/cschabl/active-jdbc-gradle-kotlin-example) at GitHub.
-
-```groovy
-task instrumentKotlinModels(type: ActiveJDBCInstrumentation) {
-    group = 'build'
-    classesDir = "${project.buildDir}/classes/kotlin/main"
-}
-
-tasks['compileKotlin'].doLast {
-    instrumentKotlinModels.instrument()
 }
 ```
 

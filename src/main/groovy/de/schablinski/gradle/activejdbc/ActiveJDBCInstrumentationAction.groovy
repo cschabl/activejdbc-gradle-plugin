@@ -4,7 +4,6 @@ import org.gradle.api.Action
 import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
-import org.gradle.api.logging.Logger;
 import org.gradle.api.model.ObjectFactory
 import org.gradle.process.ExecOperations
 import org.gradle.process.JavaExecSpec
@@ -34,7 +33,7 @@ abstract class ActiveJDBCInstrumentationAction implements Action<Task> {
 
     @Override
     void execute(Task task) {
-        String slf4JLogLevel = getSlf4LogLevel(task.getLogger())
+        String slf4JLogLevel = GradleUtils.getSlf4LogLevel(task.getLogger())
         StdOutCaptor stdOutCaptor = StdOutCaptor.newInstance()
         StdOutCaptor stdErrCaptor = StdOutCaptor.newInstance()
         FileCollection instrumentationClasspath = activeJdbcDependencies + getObjectFactory().fileCollection().from(classesDir)
@@ -64,45 +63,6 @@ abstract class ActiveJDBCInstrumentationAction implements Action<Task> {
             if (stdErrCaptor.getContent()) {
                 task.getLogger().error stdErrCaptor.getContent()
             }
-        }
-    }
-
-    private String getSlf4LogLevel(Logger logger) {
-        if (logger.isTraceEnabled()) return 'trace'
-        if (logger.isDebugEnabled()) return 'debug'
-        if (logger.isInfoEnabled()) return 'info'
-        if (logger.isWarnEnabled()) return 'warn'
-        if (logger.isErrorEnabled()) return 'error'
-        return 'off'
-    }
-
-    private static class StdOutCaptor extends PrintStream
-    {
-
-        private ByteArrayOutputStream capturingOutputStream
-        private String content
-
-        static StdOutCaptor newInstance() {
-            def out = new ByteArrayOutputStream()
-            def stdOutCaptor = new StdOutCaptor(out)
-
-            // Can't access protected field 'out' of PrintStream's super class in Java 17, anymore
-            stdOutCaptor.capturingOutputStream = out
-            return stdOutCaptor
-        }
-
-        StdOutCaptor(ByteArrayOutputStream out) {
-            super(out, true)
-        }
-
-        String getContent() {
-            return content
-        }
-
-        @Override
-        void close() {
-            content = capturingOutputStream.toString()
-            super.close()
         }
     }
 }
